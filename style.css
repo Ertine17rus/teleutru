@@ -1,20 +1,8 @@
-:root{
-    --bg:#f2f2f7;
-    --card:#ffffff;
-    --text:#111111;
-    --muted:#6b7280;
-    --blue:#007aff;
-    --blue-soft:#e9f3ff;
-    --border:#e5e7eb;
-    --shadow:0 6px 18px rgba(0,0,0,0.08);
-    --shadow-soft:0 2px 8px rgba(0,0,0,0.06);
-}
-
 body{
     font-family: Arial, sans-serif;
-    background:var(--bg);
+    background:#f2f2f7;
     margin:0;
-    color:var(--text);
+    color:#111;
 }
 
 *{
@@ -22,43 +10,40 @@ body{
 }
 
 .app{
-    max-width:520px;
+    max-width:500px;
     margin:auto;
-    padding:14px;
-    padding-bottom:110px;
-    min-height:100vh;
+    padding:10px;
+    padding-bottom:90px;
 }
 
 h1{
-    font-size:32px;
-    margin:8px 0 16px;
-    line-height:1.15;
+    font-size:26px;
+    margin:10px 0 14px;
 }
 
 input,
 textarea{
     width:100%;
-    padding:14px;
-    border-radius:14px;
+    padding:12px;
+    border-radius:12px;
     border:none;
     outline:none;
     background:white;
     font-size:16px;
-    margin-bottom:12px;
-    box-shadow:var(--shadow-soft);
+    margin-bottom:10px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
 
 textarea{
-    min-height:120px;
+    min-height:110px;
     resize:vertical;
 }
 
 .keyboard{
     display:flex;
     overflow:auto;
-    gap:6px;
     padding-bottom:6px;
-    margin-bottom:12px;
+    margin-bottom:10px;
     scrollbar-width:none;
 }
 
@@ -67,81 +52,71 @@ textarea{
 }
 
 button{
-    padding:11px 14px;
+    padding:10px 14px;
+    margin:5px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
     background:black;
     color:white;
     cursor:pointer;
     font-size:15px;
-    transition:transform 0.08s ease, opacity 0.15s ease;
-}
-
-button:active{
-    transform:scale(0.97);
-}
-
-.keyboard button{
-    margin:0;
-    min-width:44px;
-    flex:0 0 auto;
 }
 
 .card{
-    background:var(--card);
+    background:white;
     padding:15px;
     margin:10px 0;
-    border-radius:16px;
+    border-radius:12px;
     cursor:pointer;
-    box-shadow:var(--shadow-soft);
-    border:1px solid rgba(0,0,0,0.02);
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
 
 .word{
-    color:var(--blue);
+    color:#007aff;
     font-size:20px;
     font-weight:700;
 }
 
 .sub{
-    color:var(--muted);
+    color:#666;
     margin-top:6px;
     font-size:14px;
 }
 
 .empty{
     background:white;
-    padding:18px;
-    border-radius:16px;
-    color:var(--muted);
+    padding:16px;
+    border-radius:12px;
+    color:#666;
     text-align:center;
     margin-top:10px;
-    box-shadow:var(--shadow-soft);
 }
 
 .modal{
     position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.45);
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:rgba(0,0,0,0.5);
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:16px;
+    padding:15px;
     z-index:1000;
 }
 
 .modalBox{
     background:white;
-    padding:22px;
-    border-radius:18px;
+    padding:20px;
+    border-radius:16px;
     width:100%;
-    max-width:430px;
-    box-shadow:0 12px 36px rgba(0,0,0,0.2);
+    max-width:420px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.18);
 }
 
 .modalBox h2{
     margin-top:0;
-    margin-bottom:10px;
 }
 
 .modalBox ul{
@@ -154,12 +129,11 @@ button:active{
     left:50%;
     transform:translateX(-50%);
     width:100%;
-    max-width:520px;
+    max-width:500px;
     display:flex;
     background:white;
-    border-top:1px solid var(--border);
+    border-top:1px solid #e5e5ea;
     z-index:999;
-    box-shadow:0 -4px 18px rgba(0,0,0,0.06);
 }
 
 .tabs button{
@@ -167,42 +141,40 @@ button:active{
     margin:0;
     border-radius:0;
     background:white;
-    color:var(--text);
-    padding:15px 10px;
+    color:#111;
+    padding:14px 10px;
     font-weight:700;
 }
 
 .tabs button.active{
-    color:var(--blue);
-    background:linear-gradient(to top, #f5f9ff, #ffffff);
+    color:#007aff;
 }
 
 .primaryBtn{
     width:100%;
-    margin-top:6px;
-    background:var(--blue);
+    margin:10px 0 0;
+    background:#007aff;
     color:white;
 }
 
 .secondaryBtn{
     background:#111;
     color:white;
-    margin-top:12px;
 }
 
 .note{
     background:white;
-    padding:16px;
-    border-radius:16px;
-    line-height:1.5;
-    box-shadow:var(--shadow-soft);
+    padding:14px;
+    border-radius:12px;
+    line-height:1.45;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
 
 .status{
     margin-top:10px;
-    padding:12px 14px;
-    border-radius:12px;
-    background:var(--blue-soft);
+    padding:10px 12px;
+    border-radius:10px;
+    background:#e9f3ff;
     color:#0a4ea3;
     font-size:14px;
 }
@@ -214,13 +186,13 @@ button:active{
 .contactLink{
     display:inline-block;
     margin-top:8px;
-    color:var(--blue);
+    color:#007aff;
     text-decoration:none;
     word-break:break-word;
     font-weight:700;
 }
 
-/* АЗБУКА */
+/* Азбука */
 .abcMenu{
     display:flex;
     gap:8px;
@@ -235,57 +207,44 @@ button:active{
 
 .abcMenu button{
     white-space:nowrap;
-    background:var(--blue);
-    color:white;
-    margin:0;
-    flex:0 0 auto;
+    background:#007aff;
 }
 
 .gridABC{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(95px, 1fr));
     gap:10px;
 }
 
 .cardABC{
     background:white;
-    border-radius:16px;
-    padding:12px;
+    border-radius:12px;
+    padding:10px;
     text-align:center;
     cursor:pointer;
-    box-shadow:var(--shadow-soft);
-    min-height:128px;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    align-items:center;
-}
-
-.cardABC:active{
-    transform:scale(0.98);
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
 }
 
 .letterABC{
-    font-size:21px;
+    font-size:20px;
     font-weight:700;
     margin-bottom:8px;
-    color:var(--blue);
-    line-height:1.1;
+    color:#007aff;
 }
 
 .cardABC img{
-    width:64px;
-    height:64px;
+    width:60px;
+    height:60px;
     object-fit:contain;
     display:block;
     margin:0 auto;
 }
 
 .imgPlaceholder{
-    width:64px;
-    height:64px;
+    width:60px;
+    height:60px;
     margin:0 auto;
-    border-radius:12px;
+    border-radius:10px;
     background:#eef1f5;
     color:#7b7b7b;
     display:flex;
@@ -300,17 +259,4 @@ button:active{
     display:flex;
     flex-direction:column;
     gap:10px;
-}
-
-.songBtn{
-    width:100%;
-    background:var(--blue);
-    color:white;
-    font-weight:700;
-}
-
-.sectionTitle{
-    font-size:18px;
-    font-weight:700;
-    margin:6px 0 10px;
 }
