@@ -1,316 +1,475 @@
-:root{
-    --bg:#f2f2f7;
-    --card:#ffffff;
-    --text:#111111;
-    --muted:#6b7280;
-    --blue:#007aff;
-    --blue-soft:#e9f3ff;
-    --border:#e5e7eb;
-    --shadow:0 6px 18px rgba(0,0,0,0.08);
-    --shadow-soft:0 2px 8px rgba(0,0,0,0.06);
+// =========================
+// Локальная база слов
+// =========================
+const defaultWords = [
+  { word: "аба", tr: ["отец"] },
+  { word: "аару", tr: ["пчела"] },
+  { word: "ай", tr: ["луна", "месяц"] },
+  { word: "айак", tr: ["нога"] },
+  { word: "айу", tr: ["медведь"] },
+  { word: "ақ", tr: ["белый", "течь", "плыть"] },
+  { word: "ал", tr: ["брать", "получать"] },
+  { word: "алтын", tr: ["золото"] },
+  { word: "амыр", tr: ["спокойный", "мир"] },
+  { word: "ач", tr: ["голодный"] },
+  { word: "аш", tr: ["еда"] }
+];
+
+const teleutAlphabet = [
+  { label: "А а", file: "a" },
+  { label: "Б б", file: "b" },
+  { label: "В в", file: "v" },
+  { label: "Г г", file: "g" },
+  { label: "Ғ ғ", file: "gh" },
+  { label: "Д д", file: "d" },
+  { label: "Е е", file: "e" },
+  { label: "Ё ё", file: "yo" },
+  { label: "Ж ж", file: "zh" },
+  { label: "З з", file: "z" },
+  { label: "И и", file: "i" },
+  { label: "Й й", file: "y" },
+  { label: "К к", file: "k" },
+  { label: "Қ қ", file: "q" },
+  { label: "Л л", file: "l" },
+  { label: "М м", file: "m" },
+  { label: "Н н", file: "n" },
+  { label: "Ң ң", file: "ng" },
+  { label: "О о", file: "o" },
+  { label: "Ö ö", file: "o2" },
+  { label: "П п", file: "p" },
+  { label: "Р р", file: "r" },
+  { label: "С с", file: "s" },
+  { label: "Т т", file: "t" },
+  { label: "У у", file: "u" },
+  { label: "Ӱ ӱ", file: "u2" },
+  { label: "Ф ф", file: "f" },
+  { label: "Х х", file: "h" },
+  { label: "Ц ц", file: "ts" },
+  { label: "Ч ч", file: "ch" },
+  { label: "Ш ш", file: "sh" },
+  { label: "Щ щ", file: "shh" },
+  { label: "Ы ы", file: "y2" },
+  { label: "Э э", file: "e2" },
+  { label: "Ю ю", file: "yu" },
+  { label: "Я я", file: "ya" },
+  { label: "J j", file: "j" }
+];
+
+const teleutNumbers = [
+  { label: "1", file: "1" },
+  { label: "2", file: "2" },
+  { label: "3", file: "3" }
+];
+
+let storedWords = [];
+try {
+  storedWords = JSON.parse(localStorage.getItem("words")) || [];
+} catch (e) {
+  storedWords = [];
 }
 
-body{
-    font-family: Arial, sans-serif;
-    background:var(--bg);
-    margin:0;
-    color:var(--text);
+let words = [];
+let currentTab = "tl";
+let activeInput = null;
+let aboutStatusMessage = "";
+let currentABCSection = "letters";
+
+// =========================
+// DOM
+// =========================
+const searchInput = document.getElementById("search");
+const content = document.getElementById("content");
+const modal = document.getElementById("modal");
+const titleEl = document.getElementById("title");
+
+// =========================
+// Инициализация слов
+// =========================
+function normalizeWord(wordObj) {
+  return {
+    word: String(wordObj.word || "").trim(),
+    tr: Array.isArray(wordObj.tr)
+      ? wordObj.tr.map(x => String(x).trim()).filter(Boolean)
+      : []
+  };
 }
 
-*{
-    box-sizing:border-box;
+function uniqueKey(wordObj) {
+  return `${wordObj.word.toLowerCase()}__${wordObj.tr.join("|").toLowerCase()}`;
 }
 
-.app{
-    max-width:520px;
-    margin:auto;
-    padding:14px;
-    padding-bottom:110px;
-    min-height:100vh;
+function mergeWords(baseList, extraList) {
+  const map = new Map();
+
+  [...baseList, ...extraList].forEach(item => {
+    const normalized = normalizeWord(item);
+    if (!normalized.word || !normalized.tr.length) return;
+    map.set(uniqueKey(normalized), normalized);
+  });
+
+  return Array.from(map.values()).sort((a, b) => a.word.localeCompare(b.word, "ru"));
 }
 
-h1{
-    font-size:32px;
-    margin:8px 0 16px;
-    line-height:1.15;
+words = mergeWords(defaultWords, storedWords);
+saveLocalWords();
+
+// =========================
+// События
+// =========================
+document.addEventListener("focusin", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+    activeInput = e.target;
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("modal")) {
+    closeModal();
+  }
+});
+
+searchInput.addEventListener("input", render);
+
+// =========================
+// Сохранение
+// =========================
+function saveLocalWords() {
+  localStorage.setItem("words", JSON.stringify(words));
 }
 
-input,
-textarea{
-    width:100%;
-    padding:14px;
-    border-radius:14px;
-    border:none;
-    outline:none;
-    background:white;
-    font-size:16px;
-    margin-bottom:12px;
-    box-shadow:var(--shadow-soft);
+// =========================
+// Вкладки
+// =========================
+function switchTab(tab) {
+  currentTab = tab;
+
+  const titles = {
+    tl: "Телеут → Орус сöзлик",
+    ru: "Русско → Телеутский словарь",
+    abc: "Телеутская азбука",
+    about: "Поддержите проект"
+  };
+
+  titleEl.innerText = titles[tab] || "Teleut App";
+
+  if (tab === "tl") {
+    searchInput.placeholder = "Педреерге";
+    searchInput.classList.remove("hidden");
+  }
+
+  if (tab === "ru") {
+    searchInput.placeholder = "Поиск";
+    searchInput.classList.remove("hidden");
+  }
+
+  if (tab === "abc") {
+    searchInput.value = "";
+    searchInput.placeholder = "";
+    searchInput.classList.add("hidden");
+  }
+
+  if (tab === "about") {
+    searchInput.value = "";
+    searchInput.placeholder = "";
+    searchInput.classList.add("hidden");
+  }
+
+  updateActiveTabUI();
+  render();
 }
 
-textarea{
-    min-height:120px;
-    resize:vertical;
+function updateActiveTabUI() {
+  ["tl", "ru", "abc", "about"].forEach(id => {
+    const el = document.getElementById("tab-" + id);
+    if (el) {
+      el.classList.toggle("active", currentTab === id);
+    }
+  });
 }
 
-.keyboard{
-    display:flex;
-    overflow:auto;
-    gap:6px;
-    padding-bottom:6px;
-    margin-bottom:12px;
-    scrollbar-width:none;
+// =========================
+// Рендер
+// =========================
+function render() {
+  if (currentTab === "tl") renderTL();
+  if (currentTab === "ru") renderRU();
+  if (currentTab === "abc") renderABC();
+  if (currentTab === "about") renderAbout();
 }
 
-.keyboard::-webkit-scrollbar{
-    display:none;
+function renderTL() {
+  const s = searchInput.value.trim().toLowerCase();
+
+  const list = words.filter(w =>
+    w.word.toLowerCase().includes(s)
+  );
+
+  if (!list.length) {
+    content.innerHTML = `<div class="empty">Ничего не найдено</div>`;
+    return;
+  }
+
+  let html = "";
+  list.forEach((w) => {
+    html += `
+      <div class="card" onclick="openWordByIndex(${getGlobalIndex(w)}, 'tl')">
+        <div class="word">${escapeHtml(w.word)}</div>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
 }
 
-button{
-    padding:11px 14px;
-    border:none;
-    border-radius:12px;
-    background:black;
-    color:white;
-    cursor:pointer;
-    font-size:15px;
-    transition:transform 0.08s ease, opacity 0.15s ease;
+function renderRU() {
+  const s = searchInput.value.trim().toLowerCase();
+
+  const list = words.filter(w =>
+    w.tr.join(" ").toLowerCase().includes(s)
+  );
+
+  if (!list.length) {
+    content.innerHTML = `<div class="empty">Ничего не найдено</div>`;
+    return;
+  }
+
+  let html = "";
+  list.forEach((w) => {
+    html += `
+      <div class="card" onclick="openWordByIndex(${getGlobalIndex(w)}, 'ru')">
+        <div class="word">${escapeHtml(w.tr[0])}</div>
+        <div class="sub">${escapeHtml(w.word)}</div>
+      </div>
+    `;
+  });
+
+  content.innerHTML = html;
 }
 
-button:active{
-    transform:scale(0.97);
+function renderAbout() {
+  content.innerHTML = `
+    <div class="note">
+      <h2>Сохраним телеутский язык</h2>
+      <p>
+        Этот проект создан для сохранения языка.
+        Можно искать слова, смотреть переводы и добавлять новые слова локально на этом устройстве.
+      </p>
+      <p>Связь со мной:</p>
+      <a class="contactLink" href="mailto:erbolhabibulin74@gmail.com">erbolhabibulin74@gmail.com</a>
+    </div>
+
+    <div style="height:12px;"></div>
+
+    <input id="newWord" placeholder="Телеутское слово">
+    <textarea id="newTr" placeholder="Переводы через ;&#10;Например: отец; папа"></textarea>
+    <button class="primaryBtn" onclick="addWord()">Добавить слово</button>
+
+    <div id="statusBox">
+      ${aboutStatusMessage ? `<div class="status">${escapeHtml(aboutStatusMessage)}</div>` : ""}
+    </div>
+  `;
 }
 
-.keyboard button{
-    margin:0;
-    min-width:44px;
-    flex:0 0 auto;
+function renderABC() {
+  content.innerHTML = `
+    <div class="abcMenu">
+      <button type="button" onclick="showABC('letters')">🔤 Буквы</button>
+      <button type="button" onclick="showABC('numbers')">🔢 Цифры</button>
+      <button type="button" onclick="showABC('songs')">🎵 Песни</button>
+    </div>
+
+    <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
+      ${teleutAlphabet.map(item => createLetterCard(item.label, item.file)).join("")}
+    </div>
+
+    <div id="abc-numbers" class="${currentABCSection === "numbers" ? "gridABC" : "gridABC hidden"}">
+      ${teleutNumbers.map(item => createLetterCard(item.label, item.file)).join("")}
+    </div>
+
+    <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
+      <button type="button" onclick="playMusic('song1')">▶️ Песня 1</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Песня 2</button>
+      <!-- Добавь новые песни сюда:
+      <button type="button" onclick="playMusic('song3')">▶️ Песня 3</button>
+      -->
+    </div>
+  `;
 }
 
-.card{
-    background:var(--card);
-    padding:15px;
-    margin:10px 0;
-    border-radius:16px;
-    cursor:pointer;
-    box-shadow:var(--shadow-soft);
-    border:1px solid rgba(0,0,0,0.02);
+// =========================
+// Азбука
+// =========================
+function createLetterCard(label, file) {
+  return `
+    <div class="cardABC" onclick="playSound('${file}')">
+      <div class="letterABC">${escapeHtml(label)}</div>
+
+      <!-- КАРТИНКИ ДЛЯ БУКВ:
+           положи файл в папку images/
+           пример: images/${file}.png
+      -->
+      <img
+        src="images/${file}.png"
+        alt="${escapeHtml(label)}"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+      />
+
+      <!-- Если картинки пока нет, покажется эта заглушка -->
+      <div class="imgPlaceholder" style="display:none;">
+        нет<br>картинки
+      </div>
+    </div>
+  `;
 }
 
-.word{
-    color:var(--blue);
-    font-size:20px;
-    font-weight:700;
+function showABC(type) {
+  currentABCSection = type;
+  renderABC();
 }
 
-.sub{
-    color:var(--muted);
-    margin-top:6px;
-    font-size:14px;
+function playSound(name) {
+  const audio = new Audio("sounds/" + name + ".mp3");
+  audio.play().catch(() => {
+    console.log("Нет звука для:", name);
+  });
 }
 
-.empty{
-    background:white;
-    padding:18px;
-    border-radius:16px;
-    color:var(--muted);
-    text-align:center;
-    margin-top:10px;
-    box-shadow:var(--shadow-soft);
+function playMusic(name) {
+  const audio = new Audio("songs/" + name + ".mp3");
+  audio.play().catch(() => {
+    console.log("Нет песни:", name);
+  });
 }
 
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.45);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:16px;
-    z-index:1000;
+// =========================
+// Модалка слова
+// =========================
+function getGlobalIndex(wordObj) {
+  return words.findIndex(x =>
+    x.word === wordObj.word &&
+    JSON.stringify(x.tr) === JSON.stringify(wordObj.tr)
+  );
 }
 
-.modalBox{
-    background:white;
-    padding:22px;
-    border-radius:18px;
-    width:100%;
-    max-width:430px;
-    box-shadow:0 12px 36px rgba(0,0,0,0.2);
+function openWordByIndex(index, type) {
+  const w = words[index];
+  if (!w) return;
+
+  const tr = w.tr.map(t => `<li>${escapeHtml(t)}</li>`).join("");
+
+  let html = "";
+
+  if (type === "tl") {
+    html = `
+      <h2>(телеут.) ${escapeHtml(w.word)}</h2>
+      <div><b>(рус.)</b></div>
+      <ul>${tr}</ul>
+    `;
+  } else {
+    html = `
+      <h2>(рус.) ${escapeHtml(w.tr[0])}</h2>
+      <div><b>(телеут.)</b></div>
+      <div style="font-size:20px; color:#007aff; font-weight:700; margin-top:8px;">
+        ${escapeHtml(w.word)}
+      </div>
+      ${
+        w.tr.length > 1
+          ? `<div class="sub" style="margin-top:10px;">Другие значения: ${escapeHtml(w.tr.slice(1).join(", "))}</div>`
+          : ""
+      }
+    `;
+  }
+
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modalBox">
+        ${html}
+        <button class="secondaryBtn" onclick="closeModal()">Закрыть</button>
+      </div>
+    </div>
+  `;
 }
 
-.modalBox h2{
-    margin-top:0;
-    margin-bottom:10px;
+function closeModal() {
+  modal.innerHTML = "";
 }
 
-.modalBox ul{
-    padding-left:20px;
+// =========================
+// Клавиатура
+// =========================
+function add(letter) {
+  if (!activeInput) {
+    activeInput = searchInput;
+  }
+
+  const start = activeInput.selectionStart ?? activeInput.value.length;
+  const end = activeInput.selectionEnd ?? activeInput.value.length;
+  const value = activeInput.value;
+
+  activeInput.value = value.slice(0, start) + letter + value.slice(end);
+  activeInput.focus();
+
+  const newPos = start + letter.length;
+  if (activeInput.setSelectionRange) {
+    activeInput.setSelectionRange(newPos, newPos);
+  }
+
+  if (activeInput.id === "search") {
+    render();
+  }
 }
 
-.tabs{
-    position:fixed;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:520px;
-    display:flex;
-    background:white;
-    border-top:1px solid var(--border);
-    z-index:999;
-    box-shadow:0 -4px 18px rgba(0,0,0,0.06);
+// =========================
+// Добавление слова
+// =========================
+function addWord() {
+  const newWordInput = document.getElementById("newWord");
+  const newTrInput = document.getElementById("newTr");
+
+  if (!newWordInput || !newTrInput) return;
+
+  const word = newWordInput.value.trim();
+  const tr = newTrInput.value
+    .split(";")
+    .map(x => x.trim())
+    .filter(Boolean);
+
+  if (!word || !tr.length) {
+    aboutStatusMessage = "Заполни слово и хотя бы один перевод.";
+    renderAbout();
+    return;
+  }
+
+  const newWord = normalizeWord({ word, tr });
+
+  const exists = words.some(w => uniqueKey(w) === uniqueKey(newWord));
+  if (exists) {
+    aboutStatusMessage = "Такое слово уже есть в словаре.";
+    renderAbout();
+    return;
+  }
+
+  words = mergeWords(words, [newWord]);
+  saveLocalWords();
+
+  aboutStatusMessage = "Слово сохранено на этом устройстве.";
+  renderAbout();
 }
 
-.tabs button{
-    flex:1;
-    margin:0;
-    border-radius:0;
-    background:white;
-    color:var(--text);
-    padding:15px 10px;
-    font-weight:700;
+// =========================
+// Утилиты
+// =========================
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-.tabs button.active{
-    color:var(--blue);
-    background:linear-gradient(to top, #f5f9ff, #ffffff);
-}
-
-.primaryBtn{
-    width:100%;
-    margin-top:6px;
-    background:var(--blue);
-    color:white;
-}
-
-.secondaryBtn{
-    background:#111;
-    color:white;
-    margin-top:12px;
-}
-
-.note{
-    background:white;
-    padding:16px;
-    border-radius:16px;
-    line-height:1.5;
-    box-shadow:var(--shadow-soft);
-}
-
-.status{
-    margin-top:10px;
-    padding:12px 14px;
-    border-radius:12px;
-    background:var(--blue-soft);
-    color:#0a4ea3;
-    font-size:14px;
-}
-
-.hidden{
-    display:none !important;
-}
-
-.contactLink{
-    display:inline-block;
-    margin-top:8px;
-    color:var(--blue);
-    text-decoration:none;
-    word-break:break-word;
-    font-weight:700;
-}
-
-/* АЗБУКА */
-.abcMenu{
-    display:flex;
-    gap:8px;
-    margin-bottom:12px;
-    overflow:auto;
-    scrollbar-width:none;
-}
-
-.abcMenu::-webkit-scrollbar{
-    display:none;
-}
-
-.abcMenu button{
-    white-space:nowrap;
-    background:var(--blue);
-    color:white;
-    margin:0;
-    flex:0 0 auto;
-}
-
-.gridABC{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
-    gap:10px;
-}
-
-.cardABC{
-    background:white;
-    border-radius:16px;
-    padding:12px;
-    text-align:center;
-    cursor:pointer;
-    box-shadow:var(--shadow-soft);
-    min-height:128px;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    align-items:center;
-}
-
-.cardABC:active{
-    transform:scale(0.98);
-}
-
-.letterABC{
-    font-size:21px;
-    font-weight:700;
-    margin-bottom:8px;
-    color:var(--blue);
-    line-height:1.1;
-}
-
-.cardABC img{
-    width:64px;
-    height:64px;
-    object-fit:contain;
-    display:block;
-    margin:0 auto;
-}
-
-.imgPlaceholder{
-    width:64px;
-    height:64px;
-    margin:0 auto;
-    border-radius:12px;
-    background:#eef1f5;
-    color:#7b7b7b;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:11px;
-    text-align:center;
-    padding:4px;
-}
-
-.songList{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.songBtn{
-    width:100%;
-    background:var(--blue);
-    color:white;
-    font-weight:700;
-}
-
-.sectionTitle{
-    font-size:18px;
-    font-weight:700;
-    margin:6px 0 10px;
-}
+// =========================
+// Старт
+// =========================
+updateActiveTabUI();
+switchTab("tl");
