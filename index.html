@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teleut App</title>
 
-  <!-- ИКОНКА САЙТА -->
-  <!-- Положи favicon.ico в корень проекта -->
-  <link rel="icon" href="favicon.ico" />
+  <!-- Иконка сайта: положи файл сюда images/favicon.ico -->
+  <link rel="icon" href="images/favicon.ico" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -16,11 +15,10 @@
   <div class="app">
     <h1 id="title">Телеут → Орус сöзлик</h1>
 
-    <!-- ПОИСК -->
     <input id="search" placeholder="Педреерге" autocomplete="off" />
 
-    <!-- ТЕЛЕУТСКАЯ КЛАВИАТУРА -->
-    <div class="keyboard" id="keyboard">
+    <!-- клавиатура -->
+    <div class="keyboard">
       <button type="button" onclick="add('Ј')">Ј</button>
       <button type="button" onclick="add('ј')">ј</button>
       <button type="button" onclick="add('Қ')">Қ</button>
@@ -35,21 +33,18 @@
       <button type="button" onclick="add('ӱ')">ӱ</button>
     </div>
 
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <div id="content"></div>
   </div>
 
-  <!-- МОДАЛКА -->
   <div id="modal"></div>
 
-  <!-- НИЖНЕЕ МЕНЮ -->
-  <div class="tabs">
-    <button type="button" id="tab-tl" onclick="switchTab('tl')">Телеут</button>
-    <button type="button" id="tab-ru" onclick="switchTab('ru')">Русский</button>
-    <button type="button" id="tab-abc" onclick="switchTab('abc')">📚</button>
-    <button type="button" id="tab-about" onclick="switchTab('about')">❤️</button>
-  </div>
-
+  <!-- нижнее меню -->
+<div class="tabs">
+  <button type="button" id="tab-tl" onclick="switchTab('tl')">Телеут</button>
+  <button type="button" id="tab-ru" onclick="switchTab('ru')">Русский</button>
+  <button type="button" id="tab-abc" onclick="switchTab('abc')">📚</button>
+  <button type="button" id="tab-about" onclick="switchTab('about')">❤️</button>
+</div>
   <script src="app.js"></script>
 </body>
 </html>
