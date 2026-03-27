@@ -5,37 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teleut App</title>
 
-  <link rel="icon" href="favicon.ico"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" href="favicon.ico" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <div class="app">
   <h1 id="title">Телеут → Орус сöзлик</h1>
 
-  <input id="search" placeholder="Педреерге"/>
+  <input id="search" placeholder="Педреерге" />
 
   <div id="content"></div>
 </div>
 
 <div id="modal"></div>
 
-<!-- ТАБЫ -->
 <div class="tabs">
   <button id="tab-tl" onclick="switchTab('tl')">Телеут</button>
   <button id="tab-ru" onclick="switchTab('ru')">Русский</button>
   <button id="tab-abc" onclick="switchTab('abc')">📚</button>
-</div>
-
-<!-- 🎧 ПЛЕЕР -->
-<div id="miniPlayer" class="miniPlayer hidden">
-  <div id="trackName">song</div>
-  <button id="playBtn" onclick="togglePlay()">▶️</button>
-  <button onclick="nextTrack()">⏭</button>
-
-  <input type="range" min="0" max="1" step="0.01"
-    value="1"
-    onchange="setVolume(this.value)">
 </div>
 
 <script src="app.js"></script>
