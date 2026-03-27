@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Teleut App</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- Иконка сайта: положи файл сюда images/favicon.ico -->
+  <link rel="icon" href="images/favicon.ico" />
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <div class="app">
     <h1 id="title">Телеут → Орус сöзлик</h1>
 
-    <input id="search" placeholder="Педреерге" autocomplete="off">
+    <input id="search" placeholder="Педреерге" autocomplete="off" />
 
     <!-- клавиатура -->
     <div class="keyboard">
@@ -38,6 +42,7 @@
   <div class="tabs">
     <button type="button" id="tab-tl" onclick="switchTab('tl')">Телеут</button>
     <button type="button" id="tab-ru" onclick="switchTab('ru')">Русский</button>
+    <button type="button" id="tab-abc" onclick="switchTab('abc')">📚</button>
     <button type="button" id="tab-about" onclick="switchTab('about')">❤️</button>
   </div>
 
