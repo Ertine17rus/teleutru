@@ -58,7 +58,14 @@ const teleutAlphabet = [
 const teleutNumbers = [
   { label: "1", file: "1" },
   { label: "2", file: "2" },
-  { label: "3", file: "3" }
+  { label: "3", file: "3" },
+  { label: "4", file: "4" },
+  { label: "5", file: "5" },
+  { label: "6", file: "6" },
+  { label: "7", file: "7" },
+  { label: "8", file: "8" },
+  { label: "9", file: "9" },
+  { label: "10", file: "10" }
 ];
 
 let storedWords = [];
@@ -146,7 +153,7 @@ function switchTab(tab) {
   const titles = {
     tl: "Телеут → Орус сöзлик",
     ru: "Русско → Телеутский словарь",
-    abc: "Телеутская азбука",
+    abc: "Телеутская говорящая азбука",
     about: "Поддержите проект"
   };
 
@@ -273,7 +280,7 @@ function renderAbout() {
 function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
-      <button type="button" onclick="showABC('letters')">🔤 Буквы</button>
+      <button type="button" onclick="showABC('letters')">🔤 Букварь</button>
       <button type="button" onclick="showABC('numbers')">🔢 Цифры</button>
       <button type="button" onclick="showABC('songs')">🎵 Песни</button>
     </div>
@@ -289,8 +296,13 @@ function renderABC() {
     <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
       <button type="button" onclick="playMusic('song1')">▶️ Песня 1</button>
       <button type="button" onclick="playMusic('song2')">▶️ Песня 2</button>
-      <!-- Добавь новые песни сюда:
       <button type="button" onclick="playMusic('song3')">▶️ Песня 3</button>
+      <button type="button" onclick="playMusic('song1')">▶️ Песня 4</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Песня 5</button>
+      <button type="button" onclick="playMusic('song3')">▶️ Песня 6</button>
+      <button type="button" onclick="playMusic('song1')">▶️ Песня 7</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Песня 8</button>
+      <button type="button" onclick="playMusic('song3')">▶️ Песня 9</button>
       -->
     </div>
   `;
