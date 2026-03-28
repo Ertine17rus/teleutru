@@ -280,9 +280,9 @@ function renderAbout() {
 function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
-      <button type="button" onclick="showABC('letters')">🔤 Букварь</button>
-      <button type="button" onclick="showABC('numbers')">🔢 Цифры</button>
-      <button type="button" onclick="showABC('songs')">🎵 Песни</button>
+      <button type="button" onclick="showABC('letters')">🔤 Телеут Букварь </button>
+      <button type="button" onclick="showABC('numbers')">🔢 Тоолар|Цифры</button>
+      <button type="button" onclick="showABC('songs')">🎵 Сарыннар|Песни</button>
     </div>
 
     <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
@@ -294,15 +294,15 @@ function renderABC() {
     </div>
 
     <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
-      <button type="button" onclick="playMusic('song1')">▶️ Песня 1</button>
-      <button type="button" onclick="playMusic('song2')">▶️ Песня 2</button>
-      <button type="button" onclick="playMusic('song3')">▶️ Песня 3</button>
-      <button type="button" onclick="playMusic('song1')">▶️ Песня 4</button>
-      <button type="button" onclick="playMusic('song2')">▶️ Песня 5</button>
-      <button type="button" onclick="playMusic('song3')">▶️ Песня 6</button>
-      <button type="button" onclick="playMusic('song1')">▶️ Песня 7</button>
-      <button type="button" onclick="playMusic('song2')">▶️ Песня 8</button>
-      <button type="button" onclick="playMusic('song3')">▶️ Песня 9</button>
+      <button type="button" onclick="playMusic('song1')">▶️ Сарын|Песня 1</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Сарын|Песня 2</button>
+      <button type="button" onclick="playMusic('song3')">▶️ Сарын|Песня 3</button>
+      <button type="button" onclick="playMusic('song1')">▶️ Сарын|Песня 4</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Сарын|Песня 5</button>
+      <button type="button" onclick="playMusic('song3')">▶️ Сарын|Песня 6</button>
+      <button type="button" onclick="playMusic('song1')">▶️ Сарын|Песня 7</button>
+      <button type="button" onclick="playMusic('song2')">▶️ Сарын|Песня 8</button>
+      <button type="button" onclick="playMusic('song3')">▶️ Cарын|Песня 9</button>
       -->
     </div>
   `;
