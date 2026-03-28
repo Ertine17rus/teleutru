@@ -22,6 +22,7 @@ const teleutAlphabet = [
   { label: "Г г", file: "g" },
   { label: "Ғ ғ", file: "gh" },
   { label: "Д д", file: "d" },
+  { label: "J j", file: "j" },
   { label: "Е е", file: "e" },
   { label: "Ё ё", file: "yo" },
   { label: "Ж ж", file: "zh" },
@@ -48,11 +49,13 @@ const teleutAlphabet = [
   { label: "Ч ч", file: "ch" },
   { label: "Ш ш", file: "sh" },
   { label: "Щ щ", file: "shh" },
+  { label: "Ъ ъ", file: "tz" },
+  { label: "Ь ь", file: "mz" },
   { label: "Ы ы", file: "y2" },
   { label: "Э э", file: "e2" },
   { label: "Ю ю", file: "yu" },
   { label: "Я я", file: "ya" },
-  { label: "J j", file: "j" }
+  
 ];
 
 const teleutNumbers = [
