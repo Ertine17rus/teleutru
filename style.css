@@ -260,3 +260,76 @@ button{
     flex-direction:column;
     gap:10px;
 }
+/* =========================
+   🎧 ПЛЕЕР (Spotify стиль)
+   ========================= */
+
+.playerBox{
+    margin:10px 0;
+    padding:12px;
+    border-radius:16px;
+    background:linear-gradient(135deg, #1db954, #191414);
+    color:white;
+    box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+
+.playerCover{
+    width:100%;
+    height:120px;
+    border-radius:12px;
+    background-size:cover;
+    background-position:center;
+    margin-bottom:10px;
+}
+
+.playerInfo{
+    display:flex;
+    flex-direction:column;
+}
+
+.playerTitle{
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+/* кнопки управления */
+.playerControls{
+    display:flex;
+    gap:10px;
+}
+
+.playerControls button{
+    flex:1;
+    padding:8px;
+    border-radius:8px;
+    border:none;
+    background:white;
+    color:black;
+    cursor:pointer;
+    font-weight:700;
+}
+
+/* список песен */
+.songCard{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    background:white;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    transition:0.2s;
+}
+
+.songCard:hover{
+    transform:scale(1.02);
+}
+
+.songCard img{
+    width:50px;
+    height:50px;
+    border-radius:8px;
+    object-fit:cover;
+}
