@@ -281,8 +281,8 @@ function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
       <button type="button" onclick="showABC('letters')">🔤 Телеут Букварь </button>
-      <button type="button" onclick="showABC('numbers')">🔢 Тоолар Цифры</button>
-      <button type="button" onclick="showABC('songs')">🎵 Сарыннар Песни</button>
+      <button type="button" onclick="showABC('numbers')">🔢 Тоолдор|Цифры</button>
+      <button type="button" onclick="showABC('songs')">🎵 Сарындар|Песни</button>
     </div>
 
     <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
