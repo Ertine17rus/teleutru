@@ -318,15 +318,30 @@ function renderABC() {
       ${teleutNumbers.map(item => createLetterCard(item.label, item.file)).join("")}
     </div>
 
-<div class="playerInfo">
+<div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
 
-  <div class="playerTitle" id="playerTitle">Название</div>
+  <div id="playerBox" class="playerBox hidden">
+    <div class="playerCover" id="playerCover"></div>
 
-  <div class="playerControls">
-    <button onclick="prevSong()">⏮</button>
-    <button onclick="togglePlay()">⏯</button>
-    <button onclick="nextSong()">⏭</button>
+    <div class="playerInfo">
+      <div class="playerTitle" id="playerTitle">Название</div>
+
+      <div class="playerControls">
+        <button onclick="prevSong()">⏮</button>
+        <button onclick="togglePlay()">⏯</button>
+        <button onclick="nextSong()">⏭</button>
+      </div>
+    </div>
   </div>
+
+  ${songs.map(s => `
+    <div class="songCard" onclick="playMusic('${s.id}', '${s.title}', '${s.cover}')">
+      <img src="${s.cover}" onerror="this.style.display='none'">
+      <div>${s.title}</div>
+    </div>
+  `).join("")}
+
+</div>
 
 </div>
   `;
@@ -387,19 +402,7 @@ function playSound(name) {
   });
 }
 
-function playMusic(name) {
-  if (currentMusic) {
-    currentMusic.pause();
-    currentMusic.currentTime = 0;
-  }
 
-  currentMusic = new Audio("songs/" + name + ".mp3");
-  currentMusic.volume = volume;
-
-  currentMusic.play().catch(() => {
-    console.log("Нет песни:", name);
-  });
-}
 function stopAllAudio() {
   if (currentAudio) {
     currentAudio.pause();
@@ -548,15 +551,15 @@ function playMusic(name, title, cover) {
 
   currentSongIndex = songs.findIndex(s => s.id === name);
 
-  const box = document.getElementById("playerBox");
-  const titleEl = document.getElementById("playerTitle");
-  const coverEl = document.getElementById("playerCover");
+ const box = document.getElementById("playerBox");
+const playerTitleEl = document.getElementById("playerTitle"); // ✅ новое имя
+const coverEl = document.getElementById("playerCover");
 
-  if (box && titleEl && coverEl) {
-    box.classList.remove("hidden");
-    titleEl.innerText = title;
-    coverEl.style.backgroundImage = `url('${cover}')`;
-  }
+if (box && playerTitleEl && coverEl) {
+  box.classList.remove("hidden");
+  playerTitleEl.innerText = title; // ✅ используем новое имя
+  coverEl.style.backgroundImage = `url('${cover}')`;
+}
 }
 
 function togglePlay() {
