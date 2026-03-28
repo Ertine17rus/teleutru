@@ -305,7 +305,6 @@ function renderABC() {
       <button type="button" onclick="playMusic('song7')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song8')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song9')">▶️ Cарын|Песня </button>
-      -->
     </div>
   `;
 }
