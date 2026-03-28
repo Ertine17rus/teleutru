@@ -81,10 +81,6 @@ let activeInput = null;
 let aboutStatusMessage = "";
 let currentABCSection = "letters";
 
-// 🔊 ЗВУК
-let currentAudio = null;
-let currentMusic = null;
-let volume = parseFloat(localStorage.getItem("volume")) || 1;
 // =========================
 // DOM
 // =========================
@@ -289,7 +285,6 @@ function renderABC() {
       <button type="button" onclick="showABC('letters')">🔤 Телеут Букварь </button>
       <button type="button" onclick="showABC('numbers')">🔢 Тоолдор|Цифры</button>
       <button type="button" onclick="showABC('songs')">🎵 Сарындар|Песни</button>
-      <div style="padding:10px;">
     </div>
 
     <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
@@ -310,23 +305,9 @@ function renderABC() {
       <button type="button" onclick="playMusic('song7')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song8')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song9')">▶️ Cарын|Песня </button>
+      -->
     </div>
   `;
-  setTimeout(() => {
-    const vol = document.getElementById("volumeControl");
-    if (vol) {
-      vol.value = volume;
-
-      vol.addEventListener("input", function () {
-        volume = this.value;
-
-        if (currentAudio) currentAudio.volume = volume;
-        if (currentMusic) currentMusic.volume = volume;
-
-        localStorage.setItem("volume", volume);
-      });
-    }
-  }, 0);
 }
 
 // =========================
@@ -361,32 +342,19 @@ function showABC(type) {
 }
 
 function playSound(name) {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-  }
-
-  currentAudio = new Audio("sounds/" + name + ".mp3");
-  currentAudio.volume = volume;
-
-  currentAudio.play().catch(() => {
+  const audio = new Audio("sounds/" + name + ".mp3");
+  audio.play().catch(() => {
     console.log("Нет звука для:", name);
   });
 }
 
 function playMusic(name) {
-  if (currentMusic) {
-    currentMusic.pause();
-    currentMusic.currentTime = 0;
-  }
-
-  currentMusic = new Audio("songs/" + name + ".mp3");
-  currentMusic.volume = volume;
-
-  currentMusic.play().catch(() => {
+  const audio = new Audio("songs/" + name + ".mp3");
+  audio.play().catch(() => {
     console.log("Нет песни:", name);
   });
 }
+
 // =========================
 // Модалка слова
 // =========================
