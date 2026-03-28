@@ -67,6 +67,19 @@ const teleutNumbers = [
   { label: "9", file: "9" },
   { label: "10", file: "10" }
 ];
+const songs = [
+  { id: "song1", title: "Сарын 1", cover: "covers/song1.jpg" },
+  { id: "song2", title: "Сарын 2", cover: "covers/song2.jpg" },
+  { id: "song3", title: "Сарын 3", cover: "covers/song3.jpg" },
+  { id: "song4", title: "Сарын 4", cover: "covers/song4.jpg" },
+  { id: "song5", title: "Сарын 5", cover: "covers/song5.jpg" },
+  { id: "song6", title: "Сарын 6", cover: "covers/song6.jpg" },
+  { id: "song7", title: "Сарын 7", cover: "covers/song7.jpg" },
+  { id: "song8", title: "Сарын 8", cover: "covers/song8.jpg" },
+  { id: "song9", title: "Сарын 9", cover: "covers/song9.jpg" }
+];
+
+let currentSong = null;
 
 let storedWords = [];
 try {
@@ -305,19 +318,17 @@ function renderABC() {
       ${teleutNumbers.map(item => createLetterCard(item.label, item.file)).join("")}
     </div>
 
-    <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
-      <button onclick="stopAllAudio()">⏹ Остановить всё</button>
+<div class="playerInfo">
 
-      <button type="button" onclick="playMusic('song1')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song2')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song3')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song4')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song5')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song6')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song7')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song8')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song9')">▶️ Сарын|Песня </button>
-    </div>
+  <div class="playerTitle" id="playerTitle">Название</div>
+
+  <div class="playerControls">
+    <button onclick="prevSong()">⏮</button>
+    <button onclick="togglePlay()">⏯</button>
+    <button onclick="nextSong()">⏭</button>
+  </div>
+
+</div>
   `;
 
   // 🔊 логика громкости
@@ -518,6 +529,63 @@ function addWord() {
 // =========================
 // Утилиты
 // =========================
+// =========================
+// 🎧 Плеер (Spotify логика)
+// =========================
+let currentSongIndex = -1;
+let isPlaying = false;
+
+function playMusic(name, title, cover) {
+  if (currentMusic) {
+    currentMusic.pause();
+  }
+
+  currentMusic = new Audio("songs/" + name + ".mp3");
+  currentMusic.volume = volume;
+  currentMusic.play();
+
+  isPlaying = true;
+
+  currentSongIndex = songs.findIndex(s => s.id === name);
+
+  const box = document.getElementById("playerBox");
+  const titleEl = document.getElementById("playerTitle");
+  const coverEl = document.getElementById("playerCover");
+
+  if (box && titleEl && coverEl) {
+    box.classList.remove("hidden");
+    titleEl.innerText = title;
+    coverEl.style.backgroundImage = `url('${cover}')`;
+  }
+}
+
+function togglePlay() {
+  if (!currentMusic) return;
+
+  if (currentMusic.paused) {
+    currentMusic.play();
+    isPlaying = true;
+  } else {
+    currentMusic.pause();
+    isPlaying = false;
+  }
+}
+
+function nextSong() {
+  if (currentSongIndex === -1) return;
+
+  let next = (currentSongIndex + 1) % songs.length;
+  const s = songs[next];
+  playMusic(s.id, s.title, s.cover);
+}
+
+function prevSong() {
+  if (currentSongIndex === -1) return;
+
+  let prev = (currentSongIndex - 1 + songs.length) % songs.length;
+  const s = songs[prev];
+  playMusic(s.id, s.title, s.cover);
+}
 function escapeHtml(str) {
   return String(str)
     .replaceAll("&", "&amp;")
