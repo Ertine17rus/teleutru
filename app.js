@@ -80,6 +80,10 @@ let currentTab = "tl";
 let activeInput = null;
 let aboutStatusMessage = "";
 let currentABCSection = "letters";
+// 🔊 звук
+let currentAudio = null;
+let currentMusic = null;
+let volume = parseFloat(localStorage.getItem("volume")) || 1;
 
 // =========================
 // DOM
@@ -287,6 +291,12 @@ function renderABC() {
       <button type="button" onclick="showABC('songs')">🎵 Сарындар|Песни</button>
     </div>
 
+    <!-- 🔊 ГРОМКОСТЬ -->
+    <div style="padding:10px; display:flex; align-items:center; gap:10px;">
+      <span>🔊</span>
+      <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1" style="flex:1;">
+    </div>
+
     <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
       ${teleutAlphabet.map(item => createLetterCard(item.label, item.file)).join("")}
     </div>
@@ -296,6 +306,8 @@ function renderABC() {
     </div>
 
     <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
+      <button onclick="stopAllAudio()">⏹ Остановить всё</button>
+
       <button type="button" onclick="playMusic('song1')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song2')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song3')">▶️ Сарын|Песня </button>
@@ -304,9 +316,26 @@ function renderABC() {
       <button type="button" onclick="playMusic('song6')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song7')">▶️ Сарын|Песня </button>
       <button type="button" onclick="playMusic('song8')">▶️ Сарын|Песня </button>
-      <button type="button" onclick="playMusic('song9')">▶️ Cарын|Песня </button>
+      <button type="button" onclick="playMusic('song9')">▶️ Сарын|Песня </button>
     </div>
   `;
+
+  // 🔊 логика громкости
+  setTimeout(() => {
+    const vol = document.getElementById("volumeControl");
+    if (vol) {
+      vol.value = volume;
+
+      vol.addEventListener("input", function () {
+        volume = this.value;
+
+        if (currentAudio) currentAudio.volume = volume;
+        if (currentMusic) currentMusic.volume = volume;
+
+        localStorage.setItem("volume", volume);
+      });
+    }
+  }, 0);
 }
 
 // =========================
@@ -348,10 +377,27 @@ function playSound(name) {
 }
 
 function playMusic(name) {
-  const audio = new Audio("songs/" + name + ".mp3");
-  audio.play().catch(() => {
+  if (currentMusic) {
+    currentMusic.pause();
+    currentMusic.currentTime = 0;
+  }
+
+  currentMusic = new Audio("songs/" + name + ".mp3");
+  currentMusic.volume = volume;
+
+  currentMusic.play().catch(() => {
     console.log("Нет песни:", name);
   });
+}
+function stopAllAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  if (currentMusic) {
+    currentMusic.pause();
+    currentMusic.currentTime = 0;
+  }
 }
 
 // =========================
