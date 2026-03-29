@@ -215,34 +215,6 @@ function switchTab(tab) {
   updateKeyboardVisibility();
 }
 
-  titleEl.innerText = titles[tab] || "Teleut App";
-
-  if (tab === "tl") {
-    searchInput.placeholder = "Педреерге";
-    searchInput.classList.remove("hidden");
-  }
-
-  if (tab === "ru") {
-    searchInput.placeholder = "Поиск";
-    searchInput.classList.remove("hidden");
-  }
-
-  if (tab === "abc") {
-    searchInput.value = "";
-    searchInput.placeholder = "";
-    searchInput.classList.add("hidden");
-  }
-
-  if (tab === "about") {
-    searchInput.value = "";
-    searchInput.placeholder = "";
-    searchInput.classList.add("hidden");
-  }
-
-  updateActiveTabUI();
-  render();
-}
-
 function updateActiveTabUI() {
   ["tl", "ru", "abc", "about"].forEach(id => {
     const el = document.getElementById("tab-" + id);
@@ -351,11 +323,12 @@ function renderABC() {
       <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1" style="flex:1;">
     </div>
 
+<div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
   ${teleutAlphabet.map(item => createLetterCard(item.label, item.file, "letters")).join("")}
-
-    <div id="abc-numbers" class="${currentABCSection === "numbers" ? "gridABC" : "gridABC hidden"}">
-     ${teleutNumbers.map(item => createLetterCard(item.label, item.file, "numbers")).join("")}
-
+</div>
+   <div id="abc-numbers" class="${currentABCSection === "numbers" ? "gridABC" : "gridABC hidden"}">
+  ${teleutNumbers.map(item => createLetterCard(item.label, item.file, "numbers")).join("")}
+</div>
 <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
 
   <div id="playerBox" class="playerBox hidden">
@@ -497,27 +470,6 @@ function openWordByIndex(index, type) {
   if (type === "tl") {
     html = `
       <h2>(телеут.) ${escapeHtml(w.word)}</h2>
-      <div><b>(рус.)</b></div>
-      <ul>${tr}</ul>
-    `;
-  } else {
-    html = `
-      <h2>(рус.) ${escapeHtml(w.tr[0])}</h2>
-      <div><b>(телеут.)</b></div>
-      <div style="font-size:20px; color:#007aff; font-weight:700; margin-top:8px;">
-        ${escapeHtml(w.word)}
-      </div>
-    function openWordByIndex(index, type) {
-  const w = words[index];
-  if (!w) return;
-
-  const tr = w.tr.map(t => `<li>${escapeHtml(t)}</li>`).join("");
-
-  let html = "";
-
-  if (type === "tl") {
-    html = `
-      <h2>(телеут.) ${escapeHtml(w.word)}</h2>
 
       <button class="primaryBtn" onclick="playWord('${w.word}')">
         🔊 Озвучить
@@ -555,7 +507,6 @@ function openWordByIndex(index, type) {
     </div>
   `;
 }
-
 function closeModal() {
   modal.innerHTML = "";
 }
@@ -696,3 +647,4 @@ function escapeHtml(str) {
 // =========================
 updateActiveTabUI();
 switchTab("tl");
+updateKeyboardVisibility();
