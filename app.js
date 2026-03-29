@@ -505,6 +505,10 @@ function openWordByIndex(index, type) {
       </div>
     </div>
   `;
+    // 🔊 автопроигрывание
+  setTimeout(() => {
+    playWord(w.word);
+  }, 200);
 }
 function closeModal() {
   modal.innerHTML = "";
