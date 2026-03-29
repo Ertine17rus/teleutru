@@ -471,7 +471,7 @@ function openWordByIndex(index, type) {
       <h2>(телеут.) ${escapeHtml(w.word)}</h2>
 
       <button class="primaryBtn" onclick="playWord('${w.word}')">
-        🔊 Озвучить
+        🔊 Ӱнӱн пожотjап|Озвучить
       </button>
 
       <div style="margin-top:10px;"><b>(рус.)</b></div>
