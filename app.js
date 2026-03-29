@@ -76,7 +76,7 @@ const songs = [
   { id: "song3", title: "Сарын 3:Jылдыс-Алексей Корбин", cover: "covers/song3.jpg" },
   { id: "song4", title: "Сарын 4:Кыс-Алексей Корбин", cover: "covers/song4.jpg" },
   { id: "song5", title: "Сарын 5:Пуубайду-Алексей Корбин", cover: "covers/song5.jpg" },
-  { id: "song6", title: "Сарын 6:Mana Chechek-НКТФА Солоны ", cover: "covers/song6.jpg" },
+  { id: "song6", title: "Сарын 6:Mana ChechekНКТФА Солоны ", cover: "covers/song6.jpg" },
   { id: "song7", title: "Сарын 7:Пайрамду-НКТФА Солоны", cover: "covers/song7.jpg" },
   { id: "song8", title: "Сарын 8:Алексей Корбин-Чечегеш", cover: "covers/song8.jpg" },
   { id: "song9", title: "Сарын 9:Баксарина Валентина Н.-Такпактар", cover: "covers/song9.jpg" },
