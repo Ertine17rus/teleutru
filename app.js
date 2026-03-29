@@ -478,10 +478,11 @@ function updateKeyboardVisibility() {
 function playWord(word) {
   if (!word) return;
 
-  console.log("СЛОВО:", word);
+  let clean = translit(word);
 
-  const clean = translit(word);
-  console.log("ФАЙЛ:", clean);
+  // 🔥 страховка
+  if (word === "алтын") clean = "altyn";
+  if (word === "амыр") clean = "amyr";
 
   playSound(clean, "words");
 }
