@@ -486,7 +486,7 @@ function openWordByIndex(index, type) {
       </div>
 
       <button class="primaryBtn" onclick="playWord('${w.word}')">
-        🔊 Озвучить
+        🔊 Ӱнӱн пожотjап|Озвучить
       </button>
 
       ${
