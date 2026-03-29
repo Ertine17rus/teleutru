@@ -146,12 +146,19 @@ saveLocalWords();
 document.addEventListener("focusin", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
     activeInput = e.target;
+    updateKeyboardVisibility(); // 👈 добавили
   }
 });
 
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("modal")) {
     closeModal();
+  }
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("input") && !e.target.closest("#keyboard")) {
+    activeInput = null;
+    updateKeyboardVisibility();
   }
 });
 
@@ -176,6 +183,37 @@ function switchTab(tab) {
     abc: "Телеутская говорящая азбука",
     about: "Поддержите проект"
   };
+    titleEl.innerText = titles[tab] || "Teleut App";
+
+  if (tab === "tl") {
+    searchInput.placeholder = "Педреерге";
+    searchInput.classList.remove("hidden");
+  }
+
+  if (tab === "ru") {
+    searchInput.placeholder = "Поиск";
+    searchInput.classList.remove("hidden");
+  }
+
+  if (tab === "abc") {
+    searchInput.value = "";
+    searchInput.placeholder = "";
+    searchInput.classList.add("hidden");
+  }
+
+  if (tab === "about") {
+    searchInput.value = "";
+    searchInput.placeholder = "";
+    searchInput.classList.add("hidden");
+  }
+
+  updateActiveTabUI();
+  render();
+
+  // 🔥 ВАЖНО (логика клавиатуры)
+  activeInput = null;
+  updateKeyboardVisibility();
+}
 
   titleEl.innerText = titles[tab] || "Teleut App";
 
@@ -313,13 +351,10 @@ function renderABC() {
       <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1" style="flex:1;">
     </div>
 
-    <div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
-      ${teleutAlphabet.map(item => createLetterCard(item.label, item.file)).join("")}
-    </div>
+  ${teleutAlphabet.map(item => createLetterCard(item.label, item.file, "letters")).join("")}
 
     <div id="abc-numbers" class="${currentABCSection === "numbers" ? "gridABC" : "gridABC hidden"}">
-      ${teleutNumbers.map(item => createLetterCard(item.label, item.file)).join("")}
-    </div>
+     ${teleutNumbers.map(item => createLetterCard(item.label, item.file, "numbers")).join("")}
 
 <div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
 
@@ -370,22 +405,17 @@ function renderABC() {
 // =========================
 // Азбука
 // =========================
-function createLetterCard(label, file) {
+function createLetterCard(label, file, type = "letters") {
   return `
-    <div class="cardABC" onclick="playSound('${file}')">
+    <div class="cardABC" onclick="playSound('${file}', '${type}')">
       <div class="letterABC">${escapeHtml(label)}</div>
 
-      <!-- КАРТИНКИ ДЛЯ БУКВ:
-           положи файл в папку images/
-           пример: images/${file}.png
-      -->
       <img
         src="images/${file}.png"
         alt="${escapeHtml(label)}"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
       />
 
-      <!-- Если картинки пока нет, покажется эта заглушка -->
       <div class="imgPlaceholder" style="display:none;">
         нет<br>картинки
       </div>
@@ -398,13 +428,42 @@ function showABC(type) {
   renderABC();
 }
 
-function playSound(name) {
-  const audio = new Audio("sounds/" + name + ".mp3");
+function playSound(name, type = "letters") {
+  stopAllAudio();
+
+  const audio = new Audio(`sounds/${type}/${name}.mp3`);
+  audio.volume = volume;
+
+  currentAudio = audio;
+
   audio.play().catch(() => {
-    console.log("Нет звука для:", name);
+    console.log("Нет звука:", name);
   });
 }
+function updateKeyboardVisibility() {
+  const keyboard = document.getElementById("keyboard");
+  if (!keyboard) return;
 
+  // ❌ скрываем в детском разделе и about
+  if (currentTab === "abc" || currentTab === "about") {
+    keyboard.classList.add("hidden");
+    return;
+  }
+
+  // ✅ показываем только если есть активный input
+  if (activeInput) {
+    keyboard.classList.remove("hidden");
+  } else {
+    keyboard.classList.add("hidden");
+  }
+}
+function playWord(word) {
+  if (!word) return;
+
+  const clean = word.toLowerCase().replaceAll(" ", "_");
+
+  playSound(clean, "words");
+}
 
 function stopAllAudio() {
   if (currentAudio) {
@@ -448,6 +507,37 @@ function openWordByIndex(index, type) {
       <div style="font-size:20px; color:#007aff; font-weight:700; margin-top:8px;">
         ${escapeHtml(w.word)}
       </div>
+    function openWordByIndex(index, type) {
+  const w = words[index];
+  if (!w) return;
+
+  const tr = w.tr.map(t => `<li>${escapeHtml(t)}</li>`).join("");
+
+  let html = "";
+
+  if (type === "tl") {
+    html = `
+      <h2>(телеут.) ${escapeHtml(w.word)}</h2>
+
+      <button class="primaryBtn" onclick="playWord('${w.word}')">
+        🔊 Озвучить
+      </button>
+
+      <div style="margin-top:10px;"><b>(рус.)</b></div>
+      <ul>${tr}</ul>
+    `;
+  } else {
+    html = `
+      <h2>(рус.) ${escapeHtml(w.tr[0])}</h2>
+
+      <div style="font-size:20px; color:#007aff; font-weight:700; margin-top:8px;">
+        ${escapeHtml(w.word)}
+      </div>
+
+      <button class="primaryBtn" onclick="playWord('${w.word}')">
+        🔊 Озвучить
+      </button>
+
       ${
         w.tr.length > 1
           ? `<div class="sub" style="margin-top:10px;">Другие значения: ${escapeHtml(w.tr.slice(1).join(", "))}</div>`
