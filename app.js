@@ -478,11 +478,13 @@ function updateKeyboardVisibility() {
 function playWord(word) {
   if (!word) return;
 
+  console.log("СЛОВО:", word);
+
   const clean = translit(word);
+  console.log("ФАЙЛ:", clean);
 
   playSound(clean, "words");
 }
-
 function stopAllAudio() {
   if (currentAudio) {
     currentAudio.pause();
