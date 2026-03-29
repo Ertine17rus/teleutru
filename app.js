@@ -151,11 +151,12 @@ document.addEventListener("focusin", (e) => {
 });
 
 document.addEventListener("click", (e) => {
+  // закрытие модалки
   if (e.target.classList.contains("modal")) {
     closeModal();
   }
-});
-document.addEventListener("click", (e) => {
+
+  // скрытие клавиатуры
   if (!e.target.closest("input") && !e.target.closest("#keyboard")) {
     activeInput = null;
     updateKeyboardVisibility();
@@ -351,8 +352,6 @@ function renderABC() {
       <div>${s.title}</div>
     </div>
   `).join("")}
-
-</div>
 
 </div>
   `;
