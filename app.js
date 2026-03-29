@@ -71,15 +71,36 @@ const teleutNumbers = [
   { label: "10", file: "10" }
 ];
 const songs = [
-  { id: "song1", title: "Сарын 1", cover: "covers/song1.jpg" },
-  { id: "song2", title: "Сарын 2", cover: "covers/song2.jpg" },
-  { id: "song3", title: "Сарын 3", cover: "covers/song3.jpg" },
-  { id: "song4", title: "Сарын 4", cover: "covers/song4.jpg" },
-  { id: "song5", title: "Сарын 5", cover: "covers/song5.jpg" },
-  { id: "song6", title: "Сарын 6", cover: "covers/song6.jpg" },
-  { id: "song7", title: "Сарын 7", cover: "covers/song7.jpg" },
-  { id: "song8", title: "Сарын 8", cover: "covers/song8.jpg" },
-  { id: "song9", title: "Сарын 9", cover: "covers/song9.jpg" }
+  { id: "song1", title: "Сарын 1: Tandyr-НКТФА Солоны", cover: "covers/song1.jpg" },
+  { id: "song2", title: "Сарын 2: Кӱнӱчек-Борбак-оол Салчак", cover: "covers/song2.jpg" },
+  { id: "song3", title: "Сарын 3:Jылдыс-Алексей Корбин", cover: "covers/song3.jpg" },
+  { id: "song4", title: "Сарын 4:Кыс-Алексей Корбин", cover: "covers/song4.jpg" },
+  { id: "song5", title: "Сарын 5:Пуубайду-Алексей Корбин", cover: "covers/song5.jpg" },
+  { id: "song6", title: "Сарын 6:Mana Chechek-НКТФА Солоны ", cover: "covers/song6.jpg" },
+  { id: "song7", title: "Сарын 7:Пайрамду-НКТФА Солоны", cover: "covers/song7.jpg" },
+  { id: "song8", title: "Сарын 8:Алексей Корбин-Чечегеш", cover: "covers/song8.jpg" },
+  { id: "song9", title: "Сарын 9:Баксарина Валентина Н.-Такпактар", cover: "covers/song9.jpg" },
+  { id: "song10", title: "Сарын 10", cover: "covers/song10.jpg" },
+  { id: "song11", title: "Сарын 11", cover: "covers/song11.jpg" },
+  { id: "song12", title: "Сарын 12", cover: "covers/song12.jpg" },
+  { id: "song13", title: "Сарын 13", cover: "covers/song13.jpg" },
+  { id: "song14", title: "Сарын 14", cover: "covers/song14.jpg" },
+  { id: "song15", title: "Сарын 15", cover: "covers/song15.jpg" },
+  { id: "song16", title: "Сарын 16", cover: "covers/song16.jpg" },
+  { id: "song17", title: "Сарын 17", cover: "covers/song17.jpg" },
+  { id: "song18", title: "Сарын 18", cover: "covers/song18.jpg" },
+  { id: "song19", title: "Сарын 19", cover: "covers/song19.jpg" },
+  { id: "song20", title: "Сарын 20", cover: "covers/song20.jpg" },
+  { id: "song21", title: "Сарын 21", cover: "covers/song21.jpg" },
+  { id: "song22", title: "Сарын 22", cover: "covers/song22.jpg" },
+  { id: "song23", title: "Сарын 23", cover: "covers/song23.jpg" },
+  { id: "song24", title: "Сарын 24", cover: "covers/song24.jpg" },
+  { id: "song25", title: "Сарын 25", cover: "covers/song25.jpg" },
+  { id: "song26", title: "Сарын 26", cover: "covers/song26.jpg" },
+  { id: "song27", title: "Сарын 27", cover: "covers/song27.jpg" },
+  { id: "song28", title: "Сарын 28", cover: "covers/song28.jpg" },
+  { id: "song29", title: "Сарын 29", cover: "covers/song29.jpg" },
+  { id: "song30", title: "Сарын 30", cover: "covers/song30.jpg" }
 ];
 
 let currentSong = null;
