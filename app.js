@@ -505,10 +505,58 @@ function openWordByIndex(index, type) {
       </div>
     </div>
   `;
-    // 🔊 автопроигрывание
-  setTimeout(() => {
-    playWord(w.word);
-  }, 200);
+  function translit(word) {
+  const map = {
+    "а": "a",
+    "б": "b",
+    "в": "v",
+    "г": "g",
+    "ғ": "gh",
+    "д": "d",
+    "е": "e",
+    "ё": "yo",
+    "ж": "zh",
+    "з": "z",
+    "и": "i",
+    "й": "y",
+    "к": "k",
+    "қ": "q",
+    "л": "l",
+    "м": "m",
+    "н": "n",
+    "ң": "ng",
+    "о": "o",
+    "ө": "o2",
+    "п": "p",
+    "р": "r",
+    "с": "s",
+    "т": "t",
+    "у": "u",
+    "ӱ": "u22",
+    "ф": "f",
+    "х": "h",
+    "ц": "ts",
+    "ч": "ch",
+    "ш": "sh",
+    "щ": "shh",
+    "ы": "y2",
+    "э": "e2",
+    "ю": "yu",
+    "я": "ya"
+  };
+
+  return word
+    .toLowerCase()
+    .split("")
+    .map(l => map[l] || l)
+    .join("");
+}
+function playWord(word) {
+  if (!word) return;
+
+  const clean = translit(word);
+
+  playSound(clean, "words");
 }
 function closeModal() {
   modal.innerHTML = "";
