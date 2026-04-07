@@ -406,7 +406,7 @@ function renderAbout() {
 function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
-      <button onclick="showABC('letters')">🔤 Буквы</button>
+      <button onclick="showABC('letters')">🔤 Телеңет Азбука</button>
       <button onclick="showABC('numbers')">🔢 Тоолдлор|Цифры</button>
       <button onclick="showABC('songs')">🎵Сарындар|Песни</button>
     </div>
