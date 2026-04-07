@@ -333,3 +333,6 @@ button{
     border-radius:8px;
     object-fit:cover;
 }
+button {
+  min-height: 44px;
+}
