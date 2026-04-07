@@ -478,6 +478,7 @@ function createLetterCard(label, file, type = "letters") {
 
       <img
         src="images/${file}.png"
+        loading="lazy"
         alt="${escapeHtml(label)}"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
       />
@@ -494,16 +495,30 @@ function showABC(type) {
   renderABC();
 }
 function playSound(name, type = "letters") {
+  if (!name) return;
+
   stopAllAudio();
 
+  // создаём один раз
   if (!currentAudio) {
     currentAudio = new Audio();
+    currentAudio.preload = "none"; // 🔥 важно
   }
 
-  currentAudio.src = `sounds/${type}/${name}.mp3`;
+  const src = `sounds/${type}/${name}.mp3`;
+
+  // не перезагружаем если тот же звук
+  if (currentAudio.src.includes(src)) {
+    currentAudio.currentTime = 0;
+  } else {
+    currentAudio.src = src;
+  }
+
   currentAudio.volume = volume;
 
-  currentAudio.play().catch(() => {});
+  currentAudio.play().catch(() => {
+    console.log("Звук не найден:", src);
+  });
 }
 function updateKeyboardVisibility() {
   const keyboard = document.getElementById("keyboard");
@@ -733,7 +748,9 @@ function playMusic(name, title, cover) {
     currentMusic.pause();
   }
 
-  currentMusic = new Audio("songs/" + name + ".mp3");
+if (!currentMusic) currentMusic = new Audio();
+  
+currentMusic.src = "songs/" + name + ".mp3";
   currentMusic.volume = volume;
   currentMusic.play();
 
