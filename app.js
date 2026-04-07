@@ -465,25 +465,7 @@ function renderABC() {
     }
   }, 0);
 }
-  `;
-
-  // 🔊 логика громкости
-  setTimeout(() => {
-    const vol = document.getElementById("volumeControl");
-    if (vol) {
-      vol.value = volume;
-
-      vol.addEventListener("input", function () {
-        volume = this.value;
-
-        if (currentAudio) currentAudio.volume = volume;
-        if (currentMusic) currentMusic.volume = volume;
-
-        localStorage.setItem("volume", volume);
-      });
-    }
-  }, 0);
-}
+  
 
 // =========================
 // Азбука
