@@ -406,48 +406,81 @@ function renderAbout() {
 function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
-      <button type="button" onclick="showABC('letters')">🔤 Телеут Букварь </button>
-      <button type="button" onclick="showABC('numbers')">🔢 Тоолдор|Цифры</button>
-      <button type="button" onclick="showABC('songs')">🎵 Сарындар|Песни</button>
+      <button onclick="showABC('letters')">🔤 Буквы</button>
+      <button onclick="showABC('numbers')">🔢 Тоолдлор|Цифры</button>
+      <button onclick="showABC('songs')">🎵Сарындар|Песни</button>
     </div>
 
-    <!-- 🔊 ГРОМКОСТЬ -->
     <div style="padding:10px; display:flex; align-items:center; gap:10px;">
       <span>🔊</span>
-      <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1" style="flex:1;">
+      <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="${volume}" style="flex:1;">
     </div>
 
-<div id="abc-letters" class="${currentABCSection === "letters" ? "gridABC" : "gridABC hidden"}">
-  ${teleutAlphabet.map(item => createLetterCard(item.label, item.file, "letters")).join("")}
-</div>
-   <div id="abc-numbers" class="${currentABCSection === "numbers" ? "gridABC" : "gridABC hidden"}">
-  ${teleutNumbers.map(item => createLetterCard(item.label, item.file, "numbers")).join("")}
-</div>
-<div id="abc-songs" class="${currentABCSection === "songs" ? "songList" : "songList hidden"}">
+    ${
+      currentABCSection === "letters"
+        ? `<div class="gridABC">
+            ${teleutAlphabet.map(item =>
+              createLetterCard(item.label, item.file, "letters")
+            ).join("")}
+          </div>`
+        : ""
+    }
 
-  <div id="playerBox" class="playerBox hidden">
-    <div class="playerCover" id="playerCover"></div>
+    ${
+      currentABCSection === "numbers"
+        ? `<div class="gridABC">
+            ${teleutNumbers.map(item =>
+              createLetterCard(item.label, item.file, "numbers")
+            ).join("")}
+          </div>`
+        : ""
+    }
 
-    <div class="playerInfo">
-      <div class="playerTitle" id="playerTitle">Название</div>
+    ${
+      currentABCSection === "songs"
+        ? `<div class="songList">
 
-      <div class="playerControls">
-        <button onclick="prevSong()">⏮</button>
-        <button onclick="togglePlay()">⏯</button>
-        <button onclick="nextSong()">⏭</button>
-      </div>
-    </div>
-  </div>
+            <div id="playerBox" class="playerBox hidden">
+              <div class="playerCover" id="playerCover"></div>
 
-  ${songs.map(s => `
-    <div class="songCard" onclick="playMusic('${s.id}', '${s.title}', '${s.cover}')">
-      <img src="${s.cover}" onerror="this.style.display='none'">
-      <div>${s.title}</div>
-    </div>
-    <img src="${s.cover}" loading="lazy" onerror="this.style.display='none'">
-  `).join("")}
+              <div class="playerInfo">
+                <div class="playerTitle" id="playerTitle">Название</div>
 
-</div>
+                <div class="playerControls">
+                  <button onclick="prevSong()">⏮</button>
+                  <button onclick="togglePlay()">⏯</button>
+                  <button onclick="nextSong()">⏭</button>
+                </div>
+              </div>
+            </div>
+
+            ${songs.map(s => `
+              <div class="songCard" onclick="playMusic('${s.id}', '${s.title}', '${s.cover}')">
+                <img src="${s.cover}" loading="lazy" onerror="this.style.display='none'">
+                <div>${s.title}</div>
+              </div>
+            `).join("")}
+
+          </div>`
+        : ""
+    }
+  `;
+
+  // 🔊 громкость
+  setTimeout(() => {
+    const vol = document.getElementById("volumeControl");
+    if (vol) {
+      vol.addEventListener("input", function () {
+        volume = this.value;
+
+        if (currentAudio) currentAudio.volume = volume;
+        if (currentMusic) currentMusic.volume = volume;
+
+        localStorage.setItem("volume", volume);
+      });
+    }
+  }, 0);
+}
   `;
 
   // 🔊 логика громкости
