@@ -200,25 +200,16 @@ function switchTab(tab) {
     about: "Поддержите проект",
     guide: "Как пользоваться"
   };
-    titleEl.innerText = titles[tab] || "Teleut App";
+
+  titleEl.innerText = titles[tab] || "Teleut App";
 
   if (tab === "tl") {
     searchInput.placeholder = "Педреерге";
     searchInput.classList.remove("hidden");
-  }
-
-  if (tab === "ru") {
+  } else if (tab === "ru") {
     searchInput.placeholder = "Поиск";
     searchInput.classList.remove("hidden");
-  }
-
-  if (tab === "abc") {
-    searchInput.value = "";
-    searchInput.placeholder = "";
-    searchInput.classList.add("hidden");
-  }
-
-  if (tab === "about") {
+  } else {
     searchInput.value = "";
     searchInput.placeholder = "";
     searchInput.classList.add("hidden");
@@ -227,7 +218,6 @@ function switchTab(tab) {
   updateActiveTabUI();
   render();
 
-  // 🔥 ВАЖНО (логика клавиатуры)
   activeInput = null;
   updateKeyboardVisibility();
 }
@@ -243,14 +233,13 @@ function updateKeyboardVisibility() {
   keyboard.classList.toggle("hidden", !activeInput);
 }
 function updateActiveTabUI() {
-  ["tl", "ru", "abc", "about"].forEach(id => {
+  ["tl", "ru", "abc", "about", "guide"].forEach(id => {
     const el = document.getElementById("tab-" + id);
     if (el) {
       el.classList.toggle("active", currentTab === id);
     }
   });
 }
-
 // =========================
 // Рендер
 // =========================
@@ -450,23 +439,21 @@ function renderABC() {
     }
   `;
 
-  // 🔊 громкость
-setTimeout(() => {
-  const vol = document.getElementById("volumeControl");
-  if (vol) {
-    vol.value = volume;
+  setTimeout(() => {
+    const vol = document.getElementById("volumeControl");
+    if (vol) {
+      vol.value = volume;
+      vol.oninput = function () {
+        volume = this.value;
 
-    vol.oninput = function () {
-      volume = this.value;
+        if (currentAudio) currentAudio.volume = volume;
+        if (currentMusic) currentMusic.volume = volume;
 
-      if (currentAudio) currentAudio.volume = volume;
-      if (currentMusic) currentMusic.volume = volume;
-
-      localStorage.setItem("volume", volume);
-    };
-  }
-}, 0);
-  
+        localStorage.setItem("volume", volume);
+      };
+    }
+  }, 0);
+}
 
 // =========================
 // Азбука
