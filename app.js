@@ -54,8 +54,7 @@ const teleutAlphabet = [
   { label: "Ы ы", file: "y2" },
   { label: "Э э", file: "e2" },
   { label: "Ю ю", file: "yu" },
-  { label: "Я я", file: "ya3" },
-  
+  { label: "Я я", file: "ya3" }
 ];
 
 const teleutNumbers = [
@@ -70,13 +69,14 @@ const teleutNumbers = [
   { label: "9", file: "9" },
   { label: "10", file: "10" }
 ];
+
 const songs = [
   { id: "song1", title: "Сарын 1: Tandyr-НКТФА Солоны", cover: "covers/song1.jpg" },
   { id: "song2", title: "Сарын 2: Кӱнӱчек-Борбак-оол Салчак", cover: "covers/song2.jpg" },
   { id: "song3", title: "Сарын 3:Jылдыс-Алексей Корбин", cover: "covers/song3.jpg" },
   { id: "song4", title: "Сарын 4:Кыс-Алексей Корбин", cover: "covers/song4.jpg" },
   { id: "song5", title: "Сарын 5:Пуубайду-Алексей Корбин", cover: "covers/song5.jpg" },
-  { id: "song6", title: "Сарын 6:Mana Chechek-НКТФА Солоны ", cover: "covers/song6.jpg" },
+  { id: "song6", title: "Сарын 6:Mana Chechek-НКТФА Солоны", cover: "covers/song6.jpg" },
   { id: "song7", title: "Сарын 7:Пайрамду-НКТФА Солоны", cover: "covers/song7.jpg" },
   { id: "song8", title: "Сарын 8:Алексей Корбин-Чечегеш", cover: "covers/song8.jpg" },
   { id: "song9", title: "Сарын 9:Баксарина Валентина Н.-Такпактар", cover: "covers/song9.jpg" },
@@ -84,27 +84,24 @@ const songs = [
   { id: "song11", title: "Сарын 11", cover: "covers/song11.jpg" },
   { id: "song12", title: "Сарын 12", cover: "covers/song12.jpg" },
   { id: "song13", title: "Сарын 13", cover: "covers/song13.jpg" },
-  { id: "song14", title: "Сарын 14", cover: "covers/song14.jpg" },
+  { id: "song14", title: "Сарын 14", cover: "covers/song14.jpg" }
 ];
 
-let currentSong = null;
-
-let storedWords = [];
-try {
-  storedWords = JSON.parse(localStorage.getItem("words")) || [];
-} catch (e) {
-  storedWords = [];
-}
-
+// =========================
+// Состояние
+// =========================
+let customWords = [];
 let words = [];
 let currentTab = "tl";
 let activeInput = null;
 let aboutStatusMessage = "";
 let currentABCSection = "letters";
-// 🔊 звук
 let currentAudio = null;
 let currentMusic = null;
+let currentSongIndex = -1;
+let isPlaying = false;
 let volume = parseFloat(localStorage.getItem("volume")) || 1;
+let wordAutoplayTimer = null;
 
 // =========================
 // DOM
@@ -115,12 +112,29 @@ const modal = document.getElementById("modal");
 const titleEl = document.getElementById("title");
 
 // =========================
-// Инициализация слов
+// Утилиты
 // =========================
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 function normalizeWord(wordObj) {
   return {
-    word: String(wordObj.word || "").trim(),
-    tr: Array.isArray(wordObj.tr)
+    word: String(wordObj?.word || "").trim(),
+    tr: Array.isArray(wordObj?.tr)
       ? wordObj.tr.map(x => String(x).trim()).filter(Boolean)
       : []
   };
@@ -142,49 +156,71 @@ function mergeWords(baseList, extraList) {
   return Array.from(map.values()).sort((a, b) => a.word.localeCompare(b.word, "ru"));
 }
 
-words = mergeWords(defaultWords, storedWords);
-saveLocalWords();
+function getGlobalIndex(wordObj) {
+  return words.findIndex(x =>
+    x.word === wordObj.word &&
+    JSON.stringify(x.tr) === JSON.stringify(wordObj.tr)
+  );
+}
+
+// =========================
+// LocalStorage
+// =========================
+function loadCustomWords() {
+  try {
+    const raw = JSON.parse(localStorage.getItem("words"));
+    customWords = Array.isArray(raw) ? raw.map(normalizeWord).filter(x => x.word && x.tr.length) : [];
+  } catch (e) {
+    customWords = [];
+  }
+}
+
+function saveLocalWords() {
+  localStorage.setItem("words", JSON.stringify(customWords));
+}
+
+// =========================
+// Инициализация слов
+// =========================
+loadCustomWords();
+words = mergeWords(defaultWords, customWords);
 
 // =========================
 // События
 // =========================
 document.addEventListener("focusin", (e) => {
-  if (e.target.id === "search") {
-    activeInput = searchInput;
-    updateKeyboardVisibility();
-  }
+  const target = e.target;
 
-  if (e.target.tagName === "TEXTAREA") {
-    activeInput = e.target;
+  if (
+    target.matches("input[type='text'], input:not([type]), textarea")
+  ) {
+    activeInput = target;
     updateKeyboardVisibility();
   }
 });
 
 document.addEventListener("click", (e) => {
-  // закрытие модалки
   if (e.target.classList.contains("modal")) {
     closeModal();
+    return;
   }
 
-  // скрытие клавиатуры
-  if (!e.target.closest("input") && !e.target.closest(".keyboard")) {
+  if (
+    !e.target.closest("input") &&
+    !e.target.closest("textarea") &&
+    !e.target.closest(".keyboard")
+  ) {
     activeInput = null;
     updateKeyboardVisibility();
   }
 });
 
 let searchTimeout;
-
-searchInput.addEventListener("input", () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(render, 120);
-});
-
-// =========================
-// Сохранение
-// =========================
-function saveLocalWords() {
-  localStorage.setItem("words", JSON.stringify(words));
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(render, 120);
+  });
 }
 
 // =========================
@@ -203,16 +239,18 @@ function switchTab(tab) {
 
   titleEl.innerText = titles[tab] || "Teleut App";
 
-  if (tab === "tl") {
-    searchInput.placeholder = "Педреерге";
-    searchInput.classList.remove("hidden");
-  } else if (tab === "ru") {
-    searchInput.placeholder = "Поиск";
-    searchInput.classList.remove("hidden");
-  } else {
-    searchInput.value = "";
-    searchInput.placeholder = "";
-    searchInput.classList.add("hidden");
+  if (searchInput) {
+    if (tab === "tl") {
+      searchInput.placeholder = "Педреерге";
+      searchInput.classList.remove("hidden");
+    } else if (tab === "ru") {
+      searchInput.placeholder = "Поиск";
+      searchInput.classList.remove("hidden");
+    } else {
+      searchInput.value = "";
+      searchInput.placeholder = "";
+      searchInput.classList.add("hidden");
+    }
   }
 
   updateActiveTabUI();
@@ -221,6 +259,7 @@ function switchTab(tab) {
   activeInput = null;
   updateKeyboardVisibility();
 }
+
 function updateKeyboardVisibility() {
   const keyboard = document.querySelector(".keyboard");
   if (!keyboard) return;
@@ -232,6 +271,7 @@ function updateKeyboardVisibility() {
 
   keyboard.classList.toggle("hidden", !activeInput);
 }
+
 function updateActiveTabUI() {
   ["tl", "ru", "abc", "about", "guide"].forEach(id => {
     const el = document.getElementById("tab-" + id);
@@ -240,16 +280,24 @@ function updateActiveTabUI() {
     }
   });
 }
+
 // =========================
 // Рендер
 // =========================
 function render() {
-  if (currentTab === "tl") renderTL();
-  if (currentTab === "ru") renderRU();
-  if (currentTab === "abc") renderABC();
-  if (currentTab === "about") renderAbout();
-  if (currentTab === "guide") renderGuide();
+  if (currentTab === "tl") {
+    renderTL();
+  } else if (currentTab === "ru") {
+    renderRU();
+  } else if (currentTab === "abc") {
+    renderABC();
+  } else if (currentTab === "about") {
+    renderAbout();
+  } else if (currentTab === "guide") {
+    renderGuide();
+  }
 }
+
 function renderGuide() {
   content.innerHTML = `
     <div class="note">
@@ -300,11 +348,9 @@ function renderGuide() {
 }
 
 function renderTL() {
-  const s = searchInput.value.trim().toLowerCase();
+  const s = (searchInput?.value || "").trim().toLowerCase();
 
-  const list = words.filter(w =>
-    w.word.toLowerCase().includes(s)
-  );
+  const list = words.filter(w => w.word.toLowerCase().includes(s));
 
   if (!list.length) {
     content.innerHTML = `<div class="empty">Ничего не найдено</div>`;
@@ -324,11 +370,9 @@ function renderTL() {
 }
 
 function renderRU() {
-  const s = searchInput.value.trim().toLowerCase();
+  const s = (searchInput?.value || "").trim().toLowerCase();
 
-  const list = words.filter(w =>
-    w.tr.join(" ").toLowerCase().includes(s)
-  );
+  const list = words.filter(w => w.tr.join(" ").toLowerCase().includes(s));
 
   if (!list.length) {
     content.innerHTML = `<div class="empty">Ничего не найдено</div>`;
@@ -358,7 +402,7 @@ function renderAbout() {
         Есть говорящий букварь для детей и песни на телеутском языке.
         Скоро выйдет физическая версия букваря - игрушка для детей + плюшевая говорящая игрушка.
         При поддержке носителей возможно создание образовательного портала.
-        Поддержите меня пожалуйста - разошлите  эту ссылку всем знакомым.
+        Поддержите меня пожалуйста - разошлите эту ссылку всем знакомым.
       </p>
       <p>Связь со мной:</p>
       <a class="contactLink" href="mailto:erbolhabibulin74@gmail.com">erbolhabibulin74@gmail.com</a>
@@ -366,7 +410,7 @@ function renderAbout() {
 
     <div style="height:12px;"></div>
 
-    <input id="newWord" placeholder="Телеутское слово">
+    <input id="newWord" type="text" placeholder="Телеутское слово">
     <textarea id="newTr" placeholder="Переводы через ;&#10;Например: отец; папа"></textarea>
     <button class="primaryBtn" onclick="addWord()">Добавить слово</button>
 
@@ -386,7 +430,7 @@ function renderABC() {
 
     <div style="padding:10px; display:flex; align-items:center; gap:10px;">
       <span>🔊</span>
-      <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="${volume}" style="flex:1;">
+      <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="${Number(volume)}" style="flex:1;">
     </div>
 
     ${
@@ -427,10 +471,10 @@ function renderABC() {
               </div>
             </div>
 
-            ${songs.map(s => `
-              <div class="songCard" onclick="playMusic('${s.id}', '${s.title}', '${s.cover}')">
-                <img src="${s.cover}" loading="lazy" onerror="this.style.display='none'">
-                <div>${s.title}</div>
+            ${songs.map((s, index) => `
+              <div class="songCard" onclick="playMusicByIndex(${index})">
+                <img src="${escapeAttr(s.cover)}" loading="lazy" alt="${escapeAttr(s.title)}" onerror="this.style.display='none'">
+                <div>${escapeHtml(s.title)}</div>
               </div>
             `).join("")}
 
@@ -442,14 +486,14 @@ function renderABC() {
   setTimeout(() => {
     const vol = document.getElementById("volumeControl");
     if (vol) {
-      vol.value = volume;
+      vol.value = String(volume);
       vol.oninput = function () {
-        volume = this.value;
+        volume = parseFloat(this.value) || 0;
 
         if (currentAudio) currentAudio.volume = volume;
         if (currentMusic) currentMusic.volume = volume;
 
-        localStorage.setItem("volume", volume);
+        localStorage.setItem("volume", String(volume));
       };
     }
   }, 0);
@@ -460,13 +504,13 @@ function renderABC() {
 // =========================
 function createLetterCard(label, file, type = "letters") {
   return `
-    <div class="cardABC" onclick="playSound('${file}', '${type}')">
+    <div class="cardABC" onclick="playSound('${escapeAttr(file)}', '${escapeAttr(type)}')">
       <div class="letterABC">${escapeHtml(label)}</div>
 
       <img
-        src="images/${file}.png"
+        src="images/${escapeAttr(file)}.png"
         loading="lazy"
-        alt="${escapeHtml(label)}"
+        alt="${escapeAttr(label)}"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
       />
 
@@ -481,24 +525,35 @@ function showABC(type) {
   currentABCSection = type;
   renderABC();
 }
+
+function stopAllAudio() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  if (currentMusic) {
+    currentMusic.pause();
+    currentMusic.currentTime = 0;
+  }
+}
+
 function playSound(name, type = "letters") {
   if (!name) return;
 
   stopAllAudio();
 
-  // создаём один раз
   if (!currentAudio) {
     currentAudio = new Audio();
-    currentAudio.preload = "none"; // 🔥 важно
+    currentAudio.preload = "none";
   }
 
   const src = `sounds/${type}/${name}.mp3`;
 
-  // не перезагружаем если тот же звук
-  if (currentAudio.src.includes(src)) {
+  if (currentAudio.dataset?.src === src) {
     currentAudio.currentTime = 0;
   } else {
     currentAudio.src = src;
+    currentAudio.dataset = { src };
   }
 
   currentAudio.volume = volume;
@@ -507,7 +562,8 @@ function playSound(name, type = "letters") {
     console.log("Звук не найден:", src);
   });
 }
-  function translit(word) {
+
+function translit(word) {
   const map = {
     "а": "a",
     "б": "b",
@@ -541,50 +597,36 @@ function playSound(name, type = "letters") {
     "ч": "ch",
     "ш": "sh",
     "щ": "shh",
+    "ъ": "tz",
+    "ь": "mz",
     "ы": "y2",
     "э": "e2",
     "ю": "yu",
-    "я": "ya"
+    "я": "ya",
+    "j": "j"
   };
 
-  return word
+  return String(word)
     .toLowerCase()
     .split("")
     .map(l => map[l] || l)
     .join("");
 }
+
 function playWord(word) {
   if (!word) return;
 
   let clean = translit(word);
 
-  // 🔥 страховка
   if (word === "алтын") clean = "altyn";
   if (word === "амыр") clean = "amyr";
 
   playSound(clean, "words");
 }
-function stopAllAudio() {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-  }
-  if (currentMusic) {
-    currentMusic.pause();
-    currentMusic.currentTime = 0;
-  }
-}
 
 // =========================
 // Модалка слова
 // =========================
-function getGlobalIndex(wordObj) {
-  return words.findIndex(x =>
-    x.word === wordObj.word &&
-    JSON.stringify(x.tr) === JSON.stringify(wordObj.tr)
-  );
-}
-
 function openWordByIndex(index, type) {
   const w = words[index];
   if (!w) return;
@@ -597,7 +639,7 @@ function openWordByIndex(index, type) {
     html = `
       <h2>(телеут.) ${escapeHtml(w.word)}</h2>
 
-      <button class="primaryBtn" onclick="playWord('${w.word}')">
+      <button class="primaryBtn" onclick="playWord(${JSON.stringify(w.word)})">
         🔊 Ӱнӱн пожотjап|Озвучить
       </button>
 
@@ -612,7 +654,7 @@ function openWordByIndex(index, type) {
         ${escapeHtml(w.word)}
       </div>
 
-      <button class="primaryBtn" onclick="playWord('${w.word}')">
+      <button class="primaryBtn" onclick="playWord(${JSON.stringify(w.word)})">
         🔊 Ӱнӱн пожотjап|Озвучить
       </button>
 
@@ -633,12 +675,16 @@ function openWordByIndex(index, type) {
     </div>
   `;
 
-// 🔊 автопроигрывание 
-  setTimeout(() => 
-    { playWord(w.word); 
-    }, 200); 
+  clearTimeout(wordAutoplayTimer);
+  wordAutoplayTimer = setTimeout(() => {
+    if (modal.innerHTML.trim()) {
+      playWord(w.word);
+    }
+  }, 200);
 }
+
 function closeModal() {
+  clearTimeout(wordAutoplayTimer);
   modal.innerHTML = "";
 }
 
@@ -649,6 +695,8 @@ function add(letter) {
   if (!activeInput) {
     activeInput = searchInput;
   }
+
+  if (!activeInput) return;
 
   const start = activeInput.selectionStart ?? activeInput.value.length;
   const end = activeInput.selectionEnd ?? activeInput.value.length;
@@ -690,61 +738,73 @@ function addWord() {
 
   const newWord = normalizeWord({ word, tr });
 
-  const exists = words.some(w => uniqueKey(w) === uniqueKey(newWord));
-  if (exists) {
+  const existsInAll = words.some(w => uniqueKey(w) === uniqueKey(newWord));
+  if (existsInAll) {
     aboutStatusMessage = "Такое слово уже есть в словаре.";
     renderAbout();
     return;
   }
 
-  words = mergeWords(words, [newWord]);
+  customWords = mergeWords(customWords, [newWord]);
   saveLocalWords();
+
+  words = mergeWords(defaultWords, customWords);
 
   aboutStatusMessage = "Слово сохранено на этом устройстве.";
   renderAbout();
 }
 
 // =========================
-// Утилиты
+// 🎧 Плеер
 // =========================
-// =========================
-// 🎧 Плеер (Spotify логика)
-// =========================
-let currentSongIndex = -1;
-let isPlaying = false;
+function playMusicByIndex(index) {
+  const s = songs[index];
+  if (!s) return;
+  playMusic(s.id, s.title, s.cover);
+}
 
 function playMusic(name, title, cover) {
-  if (currentMusic) {
+  if (!currentMusic) {
+    currentMusic = new Audio();
+    currentMusic.addEventListener("ended", nextSong);
+  } else {
     currentMusic.pause();
   }
 
-if (!currentMusic) currentMusic = new Audio();
-  
-currentMusic.src = "songs/" + name + ".mp3";
+  currentMusic.src = "songs/" + name + ".mp3";
   currentMusic.volume = volume;
-  currentMusic.play();
 
-  isPlaying = true;
+  currentMusic.play()
+    .then(() => {
+      isPlaying = true;
+    })
+    .catch(() => {
+      console.log("Песня не найдена:", currentMusic.src);
+      isPlaying = false;
+    });
 
   currentSongIndex = songs.findIndex(s => s.id === name);
 
- const box = document.getElementById("playerBox");
-const playerTitleEl = document.getElementById("playerTitle"); // ✅ новое имя
-const coverEl = document.getElementById("playerCover");
+  const box = document.getElementById("playerBox");
+  const playerTitleEl = document.getElementById("playerTitle");
+  const coverEl = document.getElementById("playerCover");
 
-if (box && playerTitleEl && coverEl) {
-  box.classList.remove("hidden");
-  playerTitleEl.innerText = title; // ✅ используем новое имя
-  coverEl.style.backgroundImage = `url('${cover}')`;
-}
+  if (box && playerTitleEl && coverEl) {
+    box.classList.remove("hidden");
+    playerTitleEl.innerText = title;
+    coverEl.style.backgroundImage = `url('${cover}')`;
+  }
 }
 
 function togglePlay() {
   if (!currentMusic) return;
 
   if (currentMusic.paused) {
-    currentMusic.play();
-    isPlaying = true;
+    currentMusic.play().then(() => {
+      isPlaying = true;
+    }).catch(() => {
+      isPlaying = false;
+    });
   } else {
     currentMusic.pause();
     isPlaying = false;
@@ -752,27 +812,25 @@ function togglePlay() {
 }
 
 function nextSong() {
-  if (currentSongIndex === -1) return;
+  if (!songs.length) return;
 
-  let next = (currentSongIndex + 1) % songs.length;
+  let next = currentSongIndex >= 0
+    ? (currentSongIndex + 1) % songs.length
+    : 0;
+
   const s = songs[next];
   playMusic(s.id, s.title, s.cover);
 }
 
 function prevSong() {
-  if (currentSongIndex === -1) return;
+  if (!songs.length) return;
 
-  let prev = (currentSongIndex - 1 + songs.length) % songs.length;
+  let prev = currentSongIndex >= 0
+    ? (currentSongIndex - 1 + songs.length) % songs.length
+    : 0;
+
   const s = songs[prev];
   playMusic(s.id, s.title, s.cover);
-}
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
 
 // =========================
