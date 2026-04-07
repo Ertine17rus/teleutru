@@ -454,16 +454,16 @@ function renderABC() {
   setTimeout(() => {
     const vol = document.getElementById("volumeControl");
     if (vol) {
-      vol.addEventListener("input", function () {
-        volume = this.value;
+  vol.value = volume;
 
-        if (currentAudio) currentAudio.volume = volume;
-        if (currentMusic) currentMusic.volume = volume;
+  vol.oninput = function () {
+    volume = this.value;
 
-        localStorage.setItem("volume", volume);
-      });
-    }
-  }, 0);
+    if (currentAudio) currentAudio.volume = volume;
+    if (currentMusic) currentMusic.volume = volume;
+
+    localStorage.setItem("volume", volume);
+  };
 }
   
 
