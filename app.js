@@ -85,22 +85,6 @@ const songs = [
   { id: "song12", title: "Сарын 12", cover: "covers/song12.jpg" },
   { id: "song13", title: "Сарын 13", cover: "covers/song13.jpg" },
   { id: "song14", title: "Сарын 14", cover: "covers/song14.jpg" },
-  { id: "song15", title: "Сарын 15", cover: "covers/song15.jpg" },
-  { id: "song16", title: "Сарын 16", cover: "covers/song16.jpg" },
-  { id: "song17", title: "Сарын 17", cover: "covers/song17.jpg" },
-  { id: "song18", title: "Сарын 18", cover: "covers/song18.jpg" },
-  { id: "song19", title: "Сарын 19", cover: "covers/song19.jpg" },
-  { id: "song20", title: "Сарын 20", cover: "covers/song20.jpg" },
-  { id: "song21", title: "Сарын 21", cover: "covers/song21.jpg" },
-  { id: "song22", title: "Сарын 22", cover: "covers/song22.jpg" },
-  { id: "song23", title: "Сарын 23", cover: "covers/song23.jpg" },
-  { id: "song24", title: "Сарын 24", cover: "covers/song24.jpg" },
-  { id: "song25", title: "Сарын 25", cover: "covers/song25.jpg" },
-  { id: "song26", title: "Сарын 26", cover: "covers/song26.jpg" },
-  { id: "song27", title: "Сарын 27", cover: "covers/song27.jpg" },
-  { id: "song28", title: "Сарын 28", cover: "covers/song28.jpg" },
-  { id: "song29", title: "Сарын 29", cover: "covers/song29.jpg" },
-  { id: "song30", title: "Сарын 30", cover: "covers/song30.jpg" }
 ];
 
 let currentSong = null;
@@ -552,23 +536,6 @@ function playSound(name, type = "letters") {
   currentAudio.play().catch(() => {
     console.log("Звук не найден:", src);
   });
-}
-function updateKeyboardVisibility() {
-  const keyboard = document.getElementById("keyboard");
-  if (!keyboard) return;
-
-  // ❌ скрываем в детском разделе и about
-  if (currentTab === "abc" || currentTab === "about") {
-    keyboard.classList.add("hidden");
-    return;
-  }
-
-  // ✅ показываем только если есть активный input
-  if (activeInput) {
-    keyboard.classList.remove("hidden");
-  } else {
-    keyboard.classList.add("hidden");
-  }
 }
   function translit(word) {
   const map = {
