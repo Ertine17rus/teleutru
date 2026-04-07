@@ -80,8 +80,8 @@ const songs = [
   { id: "song7", title: "Сарын 7:Пайрамду-НКТФА Солоны", cover: "covers/song7.jpg" },
   { id: "song8", title: "Сарын 8:Алексей Корбин-Чечегеш", cover: "covers/song8.jpg" },
   { id: "song9", title: "Сарын 9:Баксарина Валентина Н.-Такпактар", cover: "covers/song9.jpg" },
-  { id: "song10", title: "Сарын 10", cover: "covers/song10.jpg" },
-  { id: "song11", title: "Сарын 11", cover: "covers/song11.jpg" },
+  { id: "song10", title: "Сарын 10:Алексей Корбин-Родная земля", cover: "covers/song10.jpg" },
+  { id: "song11", title: "Сарын 11:Алексей Корбин Эне", cover: "covers/song11.jpg" },
   { id: "song12", title: "Сарын 12", cover: "covers/song12.jpg" },
   { id: "song13", title: "Сарын 13", cover: "covers/song13.jpg" },
   { id: "song14", title: "Сарын 14", cover: "covers/song14.jpg" }
