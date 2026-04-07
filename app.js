@@ -165,9 +165,14 @@ saveLocalWords();
 // События
 // =========================
 document.addEventListener("focusin", (e) => {
-  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+  if (e.target.id === "search") {
+    activeInput = searchInput;
+    updateKeyboardVisibility();
+  }
+
+  if (e.target.tagName === "TEXTAREA") {
     activeInput = e.target;
-    updateKeyboardVisibility(); // 👈 добавили
+    updateKeyboardVisibility();
   }
 });
 
@@ -184,7 +189,12 @@ document.addEventListener("click", (e) => {
   }
 });
 
-searchInput.addEventListener("input", render);
+let searchTimeout;
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(render, 120);
+});
 
 // =========================
 // Сохранение
@@ -203,7 +213,8 @@ function switchTab(tab) {
     tl: "Телеут → Орус сöзлик",
     ru: "Русско → Телеутский словарь",
     abc: "Телеутская говорящая азбука",
-    about: "Поддержите проект"
+    about: "Поддержите проект",
+    guide: "Как пользоваться"
   };
     titleEl.innerText = titles[tab] || "Teleut App";
 
@@ -236,7 +247,17 @@ function switchTab(tab) {
   activeInput = null;
   updateKeyboardVisibility();
 }
+function updateKeyboardVisibility() {
+  const keyboard = document.querySelector(".keyboard");
+  if (!keyboard) return;
 
+  if (["abc", "about", "guide"].includes(currentTab)) {
+    keyboard.classList.add("hidden");
+    return;
+  }
+
+  keyboard.classList.toggle("hidden", !activeInput);
+}
 function updateActiveTabUI() {
   ["tl", "ru", "abc", "about"].forEach(id => {
     const el = document.getElementById("tab-" + id);
@@ -254,6 +275,55 @@ function render() {
   if (currentTab === "ru") renderRU();
   if (currentTab === "abc") renderABC();
   if (currentTab === "about") renderAbout();
+  if (currentTab === "guide") renderGuide();
+}
+function renderGuide() {
+  content.innerHTML = `
+    <div class="note">
+      <h2>Как пользоваться сайтом</h2>
+
+      <h3>📖 Словарь</h3>
+      <p>
+        Выбирай направление:
+        <br>— Телеут → Русский
+        <br>— Русский → Телеут
+        <br>Вводи слово и нажимай на карточку.
+      </p>
+
+      <h3>🔊 Озвучка</h3>
+      <p>
+        В каждом слове есть кнопка озвучки.
+        Нажми — услышишь правильное произношение.
+      </p>
+
+      <h3>🔤 Азбука</h3>
+      <p>
+        В разделе "Детям":
+        <br>— буквы
+        <br>— цифры
+        <br>— песни
+        <br>Нажимай — слушай — учись.
+      </p>
+
+      <h3>🎵 Песни</h3>
+      <p>
+        Можно слушать и переключать треки.
+        Работает как мини-плеер.
+      </p>
+
+      <h3>➕ Добавление слов</h3>
+      <p>
+        В разделе "О проекте" можно добавить слово.
+        Оно сохранится на твоём устройстве.
+      </p>
+
+      <h3>💡 Зачем этот сайт</h3>
+      <p>
+        Это проект для сохранения телеутского языка.
+        Ты помогаешь развитию, просто пользуясь им.
+      </p>
+    </div>
+  `;
 }
 
 function renderTL() {
@@ -374,6 +444,7 @@ function renderABC() {
       <img src="${s.cover}" onerror="this.style.display='none'">
       <div>${s.title}</div>
     </div>
+    <img src="${s.cover}" loading="lazy" onerror="this.style.display='none'">
   `).join("")}
 
 </div>
@@ -422,18 +493,17 @@ function showABC(type) {
   currentABCSection = type;
   renderABC();
 }
-
 function playSound(name, type = "letters") {
   stopAllAudio();
 
-  const audio = new Audio(`sounds/${type}/${name}.mp3`);
-  audio.volume = volume;
+  if (!currentAudio) {
+    currentAudio = new Audio();
+  }
 
-  currentAudio = audio;
+  currentAudio.src = `sounds/${type}/${name}.mp3`;
+  currentAudio.volume = volume;
 
-  audio.play().catch(() => {
-    console.log("Нет звука:", name);
-  });
+  currentAudio.play().catch(() => {});
 }
 function updateKeyboardVisibility() {
   const keyboard = document.getElementById("keyboard");
