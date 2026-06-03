@@ -241,7 +241,7 @@ function switchTab(tab) {
 
   if (searchInput) {
     if (tab === "tl") {
-      searchInput.placeholder = "Педреерге";
+      searchInput.placeholder = "Педре";
       searchInput.classList.remove("hidden");
     } else if (tab === "ru") {
       searchInput.placeholder = "Поиск";
@@ -424,7 +424,7 @@ function renderABC() {
   content.innerHTML = `
     <div class="abcMenu">
       <button onclick="showABC('letters')">🔤 Телеңет Азбука</button>
-      <button onclick="showABC('numbers')">🔢 Тоолдлор|Цифры</button>
+      <button onclick="showABC('numbers')">🔢 Тоолдор|Цифры</button>
       <button onclick="showABC('songs')">🎵Сарындар|Песни</button>
     </div>
 
