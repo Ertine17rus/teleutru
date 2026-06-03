@@ -24,7 +24,7 @@ const teleutAlphabet = [
   { label: "", file: "dd" },
   { label: "", file: "jj" },
   { label: "", file: "e" },
-  { label: "", file: "yo" },
+  { label: "", file: "yo2" },
   { label: "", file: "zh2" },
   { label: "", file: "z2" },
   { label: "", file: "i" },
