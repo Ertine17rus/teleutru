@@ -82,9 +82,9 @@ const songs = [
   { id: "song9", title: "Сарын 9:Баксарина Валентина Н.-Такпактар", cover: "covers/song9.jpg" },
   { id: "song10", title: "Сарын 10:Алексей Корбин-Родная земля", cover: "covers/song10.jpg" },
   { id: "song11", title: "Сарын 11:Алексей Корбин Эне", cover: "covers/song11.jpg" },
-  { id: "song12", title: "Сарын 12:Колыбельная", cover: "covers/song12.jpg" },
-  { id: "song13", title: "Сарын 13:Ак-Көбөн Паатыр", cover: "covers/song13.jpg" },
-  { id: "song14", title: "Сарын 14:Казак сарын", cover: "covers/song14.jpg" }
+  { id: "song12", title: "Сарын 12:Чештанова Елена Колыбельная", cover: "covers/song12.jpg" },
+  { id: "song13", title: "Сарын 13:Чештанова Елена Ак-Көбөн Паатыр", cover: "covers/song13.jpg" },
+  { id: "song14", title: "Сарын 14:Чештанова Елена Казак сарын", cover: "covers/song14.jpg" }
 ];
 
 // =========================
