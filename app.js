@@ -53,8 +53,8 @@ const teleutAlphabet = [
   { label: "", file: "mz" },
   { label: "", file: "y2" },
   { label: "", file: "e2" },
-  { label: "", file: "yu" },
-  { label: "", file: "ya3" }
+  { label: "", file: "yu2" },
+  { label: "", file: "ya38" }
 ];
 
 const teleutNumbers = [
